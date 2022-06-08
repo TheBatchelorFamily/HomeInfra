@@ -1,6 +1,7 @@
 # HomeInfra
 
 ## Kubernetes setup
+This stack is currently build on k3s from Rancher.
 
 ### Master Node
 * Firewall config
