@@ -1,0 +1,81 @@
+---
+- name: Install Helm
+  shell: |
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+- name: Fetch ArgoCD admin password from 1Password
+  shell: |
+    op read "op://{{ argocd_1password_vault }}/{{ argocd_1password_item }}/{{ argocd_1password_field }}"
+  register: argocd_admin_password
+  delegate_to: localhost
+  become: no
+
+- name: Set kubeconfig environment variable
+  set_fact:
+    kubeconfig_path: /etc/rancher/k3s/k3s.yaml
+
+- name: Create argocd namespace
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    kubectl create namespace {{ argocd_namespace }} --dry-run=client -o yaml | kubectl apply -f -
+
+- name: Add ArgoCD Helm repository
+  shell: |
+    helm repo add argocd https://argoproj.github.io/argo-helm
+    helm repo update
+
+- name: Install ArgoCD via Helm
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    helm upgrade --install argocd argocd/argo-cd \
+      --namespace {{ argocd_namespace }} \
+      --version {{ argocd_chart_version }} \
+      --set server.service.type=LoadBalancer \
+      --set server.service.externalTrafficPolicy=Local \
+      --set configs.params.server.insecure=true \
+      --timeout 10m
+  timeout: 900
+
+- name: Wait for ArgoCD server deployment
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
+  timeout: 900
+
+- name: Display ArgoCD access info
+  debug:
+    msg:
+      - "ArgoCD has been installed successfully!"
+      - "Namespace: {{ argocd_namespace }}"
+      - "Default username: admin"
+      - "Admin password from 1Password: {{ argocd_1password_item }}"
+      - "To get the current password, run:"
+      - "  kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath=\"{.data.password}\" | base64 -d"
+      - "Or retrieve from 1Password vault: {{ argocd_1password_vault }} / {{ argocd_1password_item }}"
+      - "Then access ArgoCD at the LoadBalancer IP address"
+
+- name: Create ArgoCD bootstrap Application (App-of-Apps)
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    cat <<EOF | kubectl apply -f -
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      name: argocd-app-of-apps
+      namespace: {{ argocd_namespace }}
+    spec:
+      project: default
+      source:
+        repoURL: "{{ gitops_repo_url }}"
+        targetRevision: "{{ gitops_repo_branch }}"
+        path: "{{ gitops_repo_path }}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: {{ argocd_namespace }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+    EOF
+  register: argocd_bootstrap
+  failed_when: argocd_bootstrap.rc != 0 and 'AlreadyExists' not in argocd_bootstrap.stderr

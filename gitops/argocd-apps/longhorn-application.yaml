@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.longhorn.io
+    chart: longhorn
+    targetRevision: "1.7.0"
+    helm:
+      values: |
+        persistence:
+          defaultClass: true
+          defaultClassReplicaCount: 3
+        longhornUI:
+          replicas: 1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,11 @@
+---
+argocd_namespace: argocd
+argocd_chart_version: "7.3.4"
+# 1Password secret reference (lookup via CLI)
+# Create in 1Password: vault='Personal', item='ArgoCD Admin Password', field='password'
+argocd_1password_vault: "Shared"
+argocd_1password_item: "ArgoCD Admin Password"
+argocd_1password_field: "password"
+gitops_repo_url: "https://github.com/TheBatchelorFamily/HomeInfra.git"
+gitops_repo_path: "argocd-apps"
+gitops_repo_branch: "main"
