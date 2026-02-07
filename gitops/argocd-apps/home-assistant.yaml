@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/your/repo.git
+    repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
     targetRevision: main
     path: gitops/apps/home-assistant
 
