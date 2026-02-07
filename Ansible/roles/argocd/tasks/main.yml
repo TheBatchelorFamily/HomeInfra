@@ -3,13 +3,6 @@
   shell: |
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-- name: Fetch ArgoCD admin password from 1Password
-  shell: |
-    op read "op://{{ argocd_1password_vault }}/{{ argocd_1password_item }}/{{ argocd_1password_field }}"
-  register: argocd_admin_password
-  delegate_to: localhost
-  become: no
-
 - name: Set kubeconfig environment variable
   set_fact:
     kubeconfig_path: /etc/rancher/k3s/k3s.yaml
@@ -42,40 +35,89 @@
     kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
   timeout: 900
 
+- name: Register GitOps repository in ArgoCD
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: github-homeinfra
+      namespace: {{ argocd_namespace }}
+      labels:
+        argocd.argoproj.io/secret-type: repository
+    stringData:
+      type: git
+      url: {{ gitops_repo_url }}
+    EOF
+  register: argocd_repo_register
+
 - name: Display ArgoCD access info
   debug:
     msg:
       - "ArgoCD has been installed successfully!"
       - "Namespace: {{ argocd_namespace }}"
       - "Default username: admin"
-      - "Admin password from 1Password: {{ argocd_1password_item }}"
-      - "To get the current password, run:"
-      - "  kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath=\"{.data.password}\" | base64 -d"
-      - "Or retrieve from 1Password vault: {{ argocd_1password_vault }} / {{ argocd_1password_item }}"
-      - "Then access ArgoCD at the LoadBalancer IP address"
+      - "To get the initial admin password, run:"
+      - "  kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+      - "Then log in and change the password manually in the ArgoCD UI."
+      - "Access ArgoCD at the LoadBalancer IP address"
 
-- name: Create ArgoCD bootstrap Application (App-of-Apps)
+- name: Create ArgoCD MetalLB Application
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     cat <<EOF | kubectl apply -f -
     apiVersion: argoproj.io/v1alpha1
     kind: Application
     metadata:
-      name: argocd-app-of-apps
+      name: metallb
       namespace: {{ argocd_namespace }}
     spec:
       project: default
       source:
-        repoURL: "{{ gitops_repo_url }}"
-        targetRevision: "{{ gitops_repo_branch }}"
-        path: "{{ gitops_repo_path }}"
+        repoURL: https://metallb.github.io/metallb
+        chart: metallb
+        targetRevision: "0.13.10"
       destination:
         server: https://kubernetes.default.svc
-        namespace: {{ argocd_namespace }}
+        namespace: metallb-system
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
     EOF
-  register: argocd_bootstrap
-  failed_when: argocd_bootstrap.rc != 0 and 'AlreadyExists' not in argocd_bootstrap.stderr
+  register: argocd_metallb_app
+  failed_when: argocd_metallb_app.rc != 0 and 'AlreadyExists' not in argocd_metallb_app.stderr
+
+- name: Create ArgoCD Longhorn Application
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    cat <<EOF | kubectl apply -f -
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      name: longhorn
+      namespace: {{ argocd_namespace }}
+    spec:
+      project: default
+      source:
+        repoURL: https://charts.longhorn.io
+        chart: longhorn
+        targetRevision: "1.7.0"
+        helm:
+          values: |
+            persistence:
+              defaultClass: true
+              defaultClassReplicaCount: 3
+            longhornUI:
+              replicas: 1
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: longhorn-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+    EOF
+  register: argocd_longhorn_app
+  failed_when: argocd_longhorn_app.rc != 0 and 'AlreadyExists' not in argocd_longhorn_app.stderr
