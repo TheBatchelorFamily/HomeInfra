@@ -8,7 +8,7 @@ ingress:
       # This tells Traefik to use this ingress
       kubernetes.io/ingress.class: traefik
     hosts:
-      - host: home-assistant.local  # Or just use the IP if you don't have DNS
+      - host: ha.local  # Or just use the IP if you don't have DNS
         paths:
           - path: /
             pathType: Prefix
