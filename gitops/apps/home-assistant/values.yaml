@@ -5,10 +5,9 @@ ingress:
   main:
     enabled: true
     annotations:
-      # This tells Traefik to use this ingress
       kubernetes.io/ingress.class: traefik
     hosts:
-      - host: ha.home  # Or just use the IP if you don't have DNS
+      - host: ha.home  # This must be EXACTLY what is in your browser address bar
         paths:
           - path: /
             pathType: Prefix

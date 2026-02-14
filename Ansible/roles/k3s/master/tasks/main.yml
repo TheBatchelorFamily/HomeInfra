@@ -1,24 +1,30 @@
 ---
 
-- name: Open firewall ports
+- name: Open firewall ports (Consolidated)
   firewalld:
     immediate: yes
     permanent: yes
-    port: "{{item.port}}/{{item.proto}}"
-    state: "{{item.state}}"
-    zone: "{{zone_default}}"
-  with_items:
-  - {port: "80", proto: "tcp", state: "enabled"}
-  - {port: "443", proto: "tcp", state: "enabled"}
-  - {port: "2376", proto: "tcp", state: "enabled"}
-  - {port: "2379", proto: "tcp", state: "enabled"}  
-  - {port: "6443", proto: "tcp", state: "enabled"}
-  - {port: "8472", proto: "udp", state: "enabled"}
-  - {port: "9099", proto: "tcp", state: "enabled"}
-  - {port: "10250", proto: "tcp", state: "enabled"}
-  - {port: "10254", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "udp", state: "enabled"}
+    port: "{{ item.port }}/{{ item.proto }}"
+    state: "{{ item.state }}"
+    zone: "{{ zone_default }}"
+  loop:
+    - { port: "22", proto: "tcp", state: "enabled" }
+    - { port: "80", proto: "tcp", state: "enabled" }     # Traefik HTTP
+    - { port: "443", proto: "tcp", state: "enabled" }    # Traefik HTTPS
+    - { port: "6443", proto: "tcp", state: "enabled" }   # K3s API
+    - { port: "2379", proto: "tcp", state: "enabled" }   # etcd (if HA)
+    - { port: "8472", proto: "udp", state: "enabled" }   # Flannel VXLAN
+    - { port: "10250", proto: "tcp", state: "enabled" }  # Kubelet
+    - { port: "30000-32767", proto: "tcp", state: "enabled" }
+    - { port: "30000-32767", proto: "udp", state: "enabled" }
+
+- name: Enable Masquerading (Crucial for LoadBalancers)
+  firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: "{{ zone_default }}"
 
 - name: Install iptables-services
   dnf:
