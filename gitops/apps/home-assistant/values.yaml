@@ -1,37 +1,12 @@
 controller:
-  type: statefulset
-
-image:
-  repository: ghcr.io/home-assistant/home-assistant
-  tag: "2024.2.0"
-
-service:
-  main:
-    type: ClusterIP
-    ports:
-      http:
-        port: 8123
+  type: StatefulSet
 
 ingress:
-  main:
-    enabled: true
-    # For Traefik v2, this is usually "traefik"
-    className: traefik
-    annotations:
-      # Optional: redirect to https, tweak as needed
-      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    hosts:
-      - host: home.example.com
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      - hosts:
-          - home.example.com
-        secretName: homeassistant-tls
+  enabled: true   # Traditional ingress
+  external: false # External ingress
 
 persistence:
-  config:
-    enabled: true
-    storageClass: "local-path"   # change to your storageClass
-    size: 10Gi
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 5Gi
+  storageClass: ""

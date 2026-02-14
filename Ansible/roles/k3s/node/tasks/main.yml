@@ -1,5 +1,4 @@
 ---
-
 - name: Open firewall ports
   firewalld:
     immediate: yes
@@ -8,16 +7,21 @@
     state: "{{item.state}}"
     zone: "{{zone_default}}"
   with_items:
-  - {port: "22", proto: "tcp", state: "enabled"}
-  - {port: "80", proto: "tcp", state: "enabled"}
-  - {port: "443", proto: "tcp", state: "enabled"}
-  - {port: "2376", proto: "tcp", state: "enabled"}  
-  - {port: "8472", proto: "udp", state: "enabled"}
-  - {port: "9099", proto: "tcp", state: "enabled"}
-  - {port: "10250", proto: "tcp", state: "enabled"}
-  - {port: "10254", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "udp", state: "enabled"}
+    - { port: "22", proto: "tcp", state: "enabled" }
+    - { port: "80", proto: "tcp", state: "enabled" }
+    - { port: "443", proto: "tcp", state: "enabled" }
+    - { port: "2376", proto: "tcp", state: "enabled" }
+    - { port: "8472", proto: "udp", state: "enabled" }
+    - { port: "9099", proto: "tcp", state: "enabled" }
+    - { port: "10250", proto: "tcp", state: "enabled" }
+    - { port: "10254", proto: "tcp", state: "enabled" }
+    - { port: "30000-32767", proto: "tcp", state: "enabled" }
+    - { port: "30000-32767", proto: "udp", state: "enabled" }
+
+- name: Install iptables-services
+  dnf:
+    name: iptables-services
+    state: present
 
 - name: Add cni0 to trusted zone
   firewalld:
@@ -41,3 +45,26 @@
     daemon_reload: yes
     state: restarted
     enabled: yes
+
+- name: Add interfaces to trusted zone
+  firewalld:
+    immediate: yes
+    interface: "{{ item }}"
+    permanent: yes
+    state: enabled
+    zone: trusted
+  with_items:
+    - cni0
+    - flannel.1
+
+- name: Allow VXLAN and K3s ports in FedoraServer zone
+  firewalld:
+    immediate: yes
+    permanent: yes
+    port: "{{ item }}"
+    state: enabled
+    zone: "{{ zone_default }}"
+  with_items:
+    - "8472/udp"   # Flannel VXLAN
+    - "10250/tcp"  # Kubelet
+    - "6443/tcp"   # API Server

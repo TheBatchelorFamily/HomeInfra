@@ -1,3 +1,4 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -6,23 +7,21 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
-    targetRevision: main
-    path: gitops/apps/home-assistant
-
-    chart: app-template
-    repoURL: https://bjw-s.github.io/helm-charts/
-    targetRevision: 3.5.1
-
-    helm:
-      releaseName: home-assistant
-      valueFiles:
-        - values.yaml
-
   destination:
     server: https://kubernetes.default.svc
     namespace: home-assistant
+
+  sources:
+    - repoURL: http://pajikos.github.io/home-assistant-helm-chart/
+      chart: home-assistant
+      targetRevision: 0.3.44
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/home-assistant/values.yaml
+
+    - repoURL: git@github.com:TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
 
   syncPolicy:
     automated:
