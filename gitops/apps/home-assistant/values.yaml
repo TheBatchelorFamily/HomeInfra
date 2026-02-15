@@ -1,17 +1,17 @@
 controller:
   type: StatefulSet
 
+# CHANGE HERE: Remove 'main' nesting
 ingress:
-  main:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: traefik
-      traefik.ingress.kubernetes.io/router.entrypoints: web
-    hosts:
-      - host: ha.home
-        paths:
-          - path: /
-            pathType: Prefix
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: ha.home
+      paths:
+        - path: /
+          pathType: Prefix
 
 persistence:
   enabled: true
@@ -23,4 +23,4 @@ configuration:
   http:
     use_x_forwarded_for: true
     trusted_proxies:
-      - 10.42.0.0/16  # Your K3s Pod network
+      - 10.42.0.0/16
