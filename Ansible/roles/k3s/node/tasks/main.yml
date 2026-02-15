@@ -17,6 +17,8 @@
     - { port: "8472", proto: "udp", state: "enabled" }  # Flannel VXLAN
     - { port: "9500", proto: "tcp", state: "enabled" }   # Longhorn Manager
     - { port: "9735", proto: "tcp", state: "enabled" }   # Longhorn Engine
+    - { port: "2049", proto: "tcp", state: "enabled" }   # NFS (Backup Target)
+    - { port: "111", proto: "tcp", state: "enabled" }    # RPC Bind
     - { port: "10245", proto: "tcp", state: "enabled" }  # Kubelet gRPC (CSI)
     - { port: "10250", proto: "tcp", state: "enabled" } # Kubelet
     - { port: "30000-32767", proto: "tcp", state: "enabled" }
