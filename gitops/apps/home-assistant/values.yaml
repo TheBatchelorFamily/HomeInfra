@@ -7,7 +7,7 @@ ingress:
     annotations:
       kubernetes.io/ingress.class: traefik
     hosts:
-      - host: ha.home  # This must be EXACTLY what is in your browser address bar
+      - host: ha.home
         paths:
           - path: /
             pathType: Prefix
