@@ -1,5 +1,4 @@
 ---
-
 - name: Open firewall ports
   firewalld:
     immediate: yes
@@ -8,30 +7,41 @@
     state: "{{item.state}}"
     zone: "{{zone_default}}"
   with_items:
-  - {port: "80", proto: "tcp", state: "enabled"}
-  - {port: "443", proto: "tcp", state: "enabled"}
-  - {port: "2376", proto: "tcp", state: "enabled"}
-  - {port: "2379", proto: "tcp", state: "enabled"}  
-  - {port: "6443", proto: "tcp", state: "enabled"}
-  - {port: "8472", proto: "udp", state: "enabled"}
-  - {port: "9099", proto: "tcp", state: "enabled"}
-  - {port: "10250", proto: "tcp", state: "enabled"}
-  - {port: "10254", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "tcp", state: "enabled"}
-  - {port: "30000-32767", proto: "udp", state: "enabled"}
+    - {port: "80", proto: "tcp", state: "enabled"}
+    - {port: "443", proto: "tcp", state: "enabled"}
+    - {port: "53", proto: "udp", state: "enabled"}   # Added for Argo DNS
+    - {port: "53", proto: "tcp", state: "enabled"}   # Added for Argo DNS
+    - {port: "6443", proto: "tcp", state: "enabled"}
+    - {port: "8472", proto: "udp", state: "enabled"}
+    - {port: "10250", proto: "tcp", state: "enabled"}
+    - {port: "30000-32767", proto: "tcp", state: "enabled"}
+    - {port: "30000-32767", proto: "udp", state: "enabled"}
+
+- name: Enable Masquerading (Argo needs this to reach GitHub)
+  firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: "{{ zone_default }}"
+
+- name: Add interfaces to trusted zone
+  firewalld:
+    immediate: yes
+    interface: "{{ item }}"
+    permanent: yes
+    state: enabled
+    zone: trusted
+  with_items:
+    - cni0
+    - flannel.1
+
+# ... Keep the rest of your Master tasks (Wait for token, symlinks, etc.)
 
 - name: Install iptables-services
   dnf:
     name: iptables-services
     state: present
-
-- name: Add cni0 to trusted zone
-  firewalld:
-    immediate: yes
-    interface: cni0
-    permanent: yes
-    state: enabled
-    zone: trusted
 
 - name: Copy K3s service file
   register: k3s_service

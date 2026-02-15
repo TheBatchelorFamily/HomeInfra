@@ -1,6 +1,12 @@
 controller:
   type: StatefulSet
 
+service:
+  main:
+    ports:
+      http:
+        port: 80  # Change this from 8080 to 80
+
 # CHANGE HERE: Remove 'main' nesting
 ingress:
   enabled: true
