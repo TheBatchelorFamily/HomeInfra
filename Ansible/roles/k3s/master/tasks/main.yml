@@ -16,6 +16,9 @@
     - { port: "7946", proto: "udp", state: "enabled" }  # MetalLB BGP/Memberlist
     - { port: "8472", proto: "udp", state: "enabled" }  # Flannel VXLAN
     - { port: "10250", proto: "tcp", state: "enabled" } # Kubelet
+    - { port: "9500", proto: "tcp", state: "enabled" }   # Longhorn Manager
+    - { port: "9735", proto: "tcp", state: "enabled" }   # Longhorn Engine
+    - { port: "10245", proto: "tcp", state: "enabled" }  # Kubelet gRPC (CSI)
     - {port: "30000-32767", proto: "tcp", state: "enabled"}
     - {port: "30000-32767", proto: "udp", state: "enabled"}
 
