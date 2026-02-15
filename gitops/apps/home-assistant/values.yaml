@@ -2,7 +2,7 @@ controller:
   type: StatefulSet
 
 service:
-  port: 80  # Change this from 8080 to 80
+  port: 80 # Change this from 8080 to 80
 
 # CHANGE HERE: Remove 'main' nesting
 ingress:
@@ -26,4 +26,6 @@ configuration:
   http:
     use_x_forwarded_for: true
     trusted_proxies:
-      - 10.42.0.0/16
+      - 10.42.0.0/16 # Pod Network (Traefik's IP is here)
+      - 10.43.0.0/16 # Service Network
+      - 192.168.98.0/24 # Your Local Network (Optional, but helpful)
