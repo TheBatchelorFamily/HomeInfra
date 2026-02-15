@@ -11,9 +11,11 @@
     - {port: "443", proto: "tcp", state: "enabled"}
     - {port: "53", proto: "udp", state: "enabled"}   # Added for Argo DNS
     - {port: "53", proto: "tcp", state: "enabled"}   # Added for Argo DNS
-    - {port: "6443", proto: "tcp", state: "enabled"}
-    - {port: "8472", proto: "udp", state: "enabled"}
-    - {port: "10250", proto: "tcp", state: "enabled"}
+    - { port: "6443", proto: "tcp", state: "enabled" }  # K3s API Server
+    - { port: "7946", proto: "tcp", state: "enabled" }  # MetalLB BGP/Memberlist
+    - { port: "7946", proto: "udp", state: "enabled" }  # MetalLB BGP/Memberlist
+    - { port: "8472", proto: "udp", state: "enabled" }  # Flannel VXLAN
+    - { port: "10250", proto: "tcp", state: "enabled" } # Kubelet
     - {port: "30000-32767", proto: "tcp", state: "enabled"}
     - {port: "30000-32767", proto: "udp", state: "enabled"}
 
