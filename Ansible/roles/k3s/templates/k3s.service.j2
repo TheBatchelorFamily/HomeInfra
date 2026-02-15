@@ -1,0 +1,31 @@
+[Unit]
+Description=Lightweight Kubernetes
+Documentation=https://k3s.io
+After=network-online.target firewalld.service
+
+[Service]
+Type={{ 'notify' if 'master' in group_names else 'exec' }}
+ExecStart=/usr/local/bin/k3s {{ 'server' if 'master' in group_names else 'agent' }} \
+    {% if 'master' in group_names %}
+    --write-kubeconfig-mode 644 \
+    --cluster-init \
+    --node-ip={{ ansible_host }} \
+    {% if token is defined %}--token {{ token }}{% endif %}
+    {% else %}
+    --server https://{{ master_ip }}:6443 \
+    --token {{ hostvars[groups['master'][0]]['token'] }} \
+    --node-ip={{ ansible_host }}
+    {% endif %}
+
+KillMode=process
+Delegate=yes
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -63,61 +63,30 @@
       - "Then log in and change the password manually in the ArgoCD UI."
       - "Access ArgoCD at the LoadBalancer IP address"
 
-- name: Create ArgoCD MetalLB Application
+- name: Apply GitOps Bootstrap (App-of-Apps)
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     cat <<EOF | kubectl apply -f -
     apiVersion: argoproj.io/v1alpha1
     kind: Application
     metadata:
-      name: metallb
+      name: home-infra
       namespace: {{ argocd_namespace }}
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
     spec:
       project: default
       source:
-        repoURL: https://metallb.github.io/metallb
-        chart: metallb
-        targetRevision: "0.13.10"
+        repoURL: {{ gitops_repo_url }}
+        path: {{ argocd_app_path }}  # This points to the folder in your Git repo
+        targetRevision: {{ gitops_repo_branch }}
+        directory:
+          recurse: false # Keep this false to avoid the "Recursive Trap"
       destination:
         server: https://kubernetes.default.svc
-        namespace: metallb-system
+        namespace: {{ argocd_namespace }}
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
     EOF
-  register: argocd_metallb_app
-  failed_when: argocd_metallb_app.rc != 0 and 'AlreadyExists' not in argocd_metallb_app.stderr
-
-- name: Create ArgoCD Longhorn Application
-  shell: |
-    export KUBECONFIG={{ kubeconfig_path }}
-    cat <<EOF | kubectl apply -f -
-    apiVersion: argoproj.io/v1alpha1
-    kind: Application
-    metadata:
-      name: longhorn
-      namespace: {{ argocd_namespace }}
-    spec:
-      project: default
-      source:
-        repoURL: https://charts.longhorn.io
-        chart: longhorn
-        targetRevision: "1.7.0"
-        helm:
-          values: |
-            persistence:
-              defaultClass: true
-              defaultClassReplicaCount: 3
-            longhornUI:
-              replicas: 1
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: longhorn-system
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-    EOF
-  register: argocd_longhorn_app
-  failed_when: argocd_longhorn_app.rc != 0 and 'AlreadyExists' not in argocd_longhorn_app.stderr

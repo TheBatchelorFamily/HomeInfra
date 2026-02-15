@@ -1,5 +1,0 @@
----
-longhorn_namespace: longhorn-system
-longhorn_chart_version: "1.7.0"
-longhorn_replica_count: 3  # Number of replicas for Longhorn volumes
-longhorn_storage_path: /var/lib/longhorn  # Path on nodes for Longhorn storage

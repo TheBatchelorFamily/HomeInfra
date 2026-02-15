@@ -1,17 +1,19 @@
 ---
+- name: Install Base Packages
+  yum:
+    name:
+      - container-selinux
+      - selinux-policy-base
+      - python3-pip
+      - iptables-services
+      - firewalld
+    state: present
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+
 - name: Set SELinux to enabled state
   selinux:
     policy: targeted
     state: enforcing
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
-
-- name: Install SELinux Packages
-  yum:
-    name: "{{ packages }}"
-  vars:
-    packages:
-    - container-selinux
-    - selinux-policy-base
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: Enable IPv4 forwarding
@@ -29,39 +31,105 @@
     reload: yes
   when: (ansible_all_ipv6_addresses | default([]) | length) > 0
 
-- name: Add br_netfilter to /etc/modules-load.d/
+- name: Add br_netfilter to modules-load
   copy:
     content: "br_netfilter"
     dest: /etc/modules-load.d/br_netfilter.conf
-    mode: "u=rw,g=,o="
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+    mode: "0644"
 
 - name: Load br_netfilter
   modprobe:
     name: br_netfilter
     state: present
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
 - name: Add /usr/local/bin to sudo secure_path
   lineinfile:
     line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
     regexp: "Defaults(\\s)*secure_path(\\s)*="
     state: present
-    insertafter: EOF
     path: /etc/sudoers
     validate: 'visudo -cf %s'
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
 
-- name: Install pip package manager
-  yum:
-    name: python3-pip
-    state: present
-
-- name: Install Python kubernetes library
+- name: Install Python kubernetes libraries
   pip:
-    name: "{{ packages }}"
+    name: 
+      - kubernetes
+      - pyyaml
     state: present
-  vars:
-    packages:
-    - kubernetes
-    - pyyaml
+
+- name: Ensure Firewalld is running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Clean up potential zone conflicts (Fedora 41 specific)
+  shell: |
+    firewall-cmd --permanent --zone=public --remove-source=10.42.0.0/16 || true
+    firewall-cmd --permanent --zone=public --remove-source=10.43.0.0/16 || true
+  changed_when: false
+
+- name: Configure Trusted Zone for K3s
+  firewalld:
+    zone: trusted
+    source: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - "10.42.0.0/16" # Pod CIDR
+    - "10.43.0.0/16" # Service CIDR
+  register: zone_result
+  # Ignore the error if the source is already bound to the zone
+  failed_when: 
+    - zone_result.failed is defined 
+    - zone_result.failed 
+    - "'ZONE_CONFLICT' not in zone_result.msg"
+
+- name: Allow all traffic from Pod/Service CIDRs (Fedora 41 Rich Rules)
+  firewalld:
+    permanent: yes
+    immediate: yes
+    rich_rule: 'rule family="ipv4" source address="{{ item }}" accept'
+    zone: trusted
+    state: enabled
+  loop:
+    - "10.42.0.0/16"
+    - "10.43.0.0/16"
+
+- name: Set Trusted Zone target to ACCEPT
+  command: firewall-cmd --permanent --zone=trusted --set-target=ACCEPT
+  changed_when: true
+
+- name: Open Required Ports in Default Zone
+  firewalld:
+    immediate: yes
+    permanent: yes
+    port: "{{ item.port }}/{{ item.proto }}"
+    state: enabled
+    zone: "{{ zone_default | default('public') }}"
+  loop:
+    - { port: "22", proto: "tcp" }
+    - { port: "80", proto: "tcp" }
+    - { port: "443", proto: "tcp" }
+    - { port: "53", proto: "udp" }
+    - { port: "53", proto: "tcp" }
+    - { port: "6443", proto: "tcp" } # API Server
+    - { port: "8081", proto: "tcp" } # Argo Repo Server
+    - { port: "10250", proto: "tcp" } # Kubelet
+    - { port: "8472", proto: "udp" } # Flannel VXLAN
+    - { port: "30000-32767", proto: "tcp" }
+    - { port: "30000-32767", proto: "udp" }
+
+- name: Enable Masquerading
+  firewalld:
+    masquerade: yes
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: "{{ item }}"
+  loop: ["{{ zone_default | default('public') }}", "trusted"]
+
+- name: Force immediate firewall reload
+  command: firewall-cmd --reload
+  changed_when: true

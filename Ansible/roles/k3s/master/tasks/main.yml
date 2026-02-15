@@ -1,94 +1,20 @@
 ---
-- name: Open firewall ports
-  firewalld:
-    immediate: yes
-    permanent: yes
-    port: "{{item.port}}/{{item.proto}}"
-    state: "{{item.state}}"
-    zone: "{{zone_default}}"
-  with_items:
-    - {port: "80", proto: "tcp", state: "enabled"}
-    - {port: "443", proto: "tcp", state: "enabled"}
-    - {port: "53", proto: "udp", state: "enabled"}   # Added for Argo DNS
-    - {port: "53", proto: "tcp", state: "enabled"}   # Added for Argo DNS
-    - { port: "6443", proto: "tcp", state: "enabled" }  # K3s API Server
-    - { port: "7946", proto: "tcp", state: "enabled" }  # MetalLB BGP/Memberlist
-    - { port: "7946", proto: "udp", state: "enabled" }  # MetalLB BGP/Memberlist
-    - { port: "8472", proto: "udp", state: "enabled" }  # Flannel VXLAN
-    - { port: "10250", proto: "tcp", state: "enabled" } # Kubelet
-    - { port: "9500", proto: "tcp", state: "enabled" }   # Longhorn Manager
-    - { port: "9501", proto: "tcp", state: "enabled" }   # Longhorn Manager Metrics
-    - { port: "9735", proto: "tcp", state: "enabled" }   # Longhorn Engine
-    - { port: "2049", proto: "tcp", state: "enabled" }   # NFS (Backup Target)
-    - { port: "111", proto: "tcp", state: "enabled" }    # RPC Bind
-    - { port: "10245", proto: "tcp", state: "enabled" }  # Kubelet gRPC (CSI)
-    - {port: "30000-32767", proto: "tcp", state: "enabled"}
-    - {port: "30000-32767", proto: "udp", state: "enabled"}
-
-- name: Enable Masquerading (Argo needs this to reach GitHub)
-  firewalld:
-    masquerade: yes
-    state: enabled
-    permanent: yes
-    immediate: yes
-    zone: "{{ zone_default }}"
-
-- name: Add interfaces to trusted zone
-  firewalld:
-    immediate: yes
-    interface: "{{ item }}"
-    permanent: yes
-    state: enabled
-    zone: trusted
-  with_items:
-    - cni0
-    - flannel.1
-
-# ... Keep the rest of your Master tasks (Wait for token, symlinks, etc.)
-
-- name: Install iptables-services
-  dnf:
-    name: iptables-services
-    state: present
-
 - name: Copy K3s service file
   register: k3s_service
   template:
-    src: "k3s.service.j2"
+    src: "../../templates/k3s.service.j2"
     dest: "{{ systemd_dir }}/k3s.service"
     owner: root
     group: root
     mode: 0644
+  notify: restart k3s
 
 - name: Enable and check K3s service
   systemd:
     name: k3s
     daemon_reload: yes
-    state: restarted
+    state: started
     enabled: yes
-
-- name: Add interfaces to trusted zone
-  firewalld:
-    immediate: yes
-    interface: "{{ item }}"
-    permanent: yes
-    state: enabled
-    zone: trusted
-  with_items:
-    - cni0
-    - flannel.1
-
-- name: Allow VXLAN and K3s ports in FedoraServer zone
-  firewalld:
-    immediate: yes
-    permanent: yes
-    port: "{{ item }}"
-    state: enabled
-    zone: "{{ zone_default }}"
-  with_items:
-    - "8472/udp"   # Flannel VXLAN
-    - "10250/tcp"  # Kubelet
-    - "6443/tcp"   # API Server
 
 - name: Wait for node-token
   wait_for:
@@ -112,6 +38,9 @@
 - name: Store Master node-token
   set_fact:
     token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['k3s_cluster'] }}"
 
 - name: Restore node-token file access
   file:
@@ -151,3 +80,15 @@
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/crictl
     state: link
+
+- name: Add interfaces to trusted zone
+  ignore_errors: true
+  firewalld:
+    immediate: yes
+    interface: "{{ item }}"
+    permanent: yes
+    state: enabled
+    zone: trusted
+  with_items:
+    - cni0
+    - flannel.1
