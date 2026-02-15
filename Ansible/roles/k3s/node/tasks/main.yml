@@ -16,6 +16,7 @@
     - { port: "7946", proto: "udp", state: "enabled" }  # MetalLB BGP/Memberlist
     - { port: "8472", proto: "udp", state: "enabled" }  # Flannel VXLAN
     - { port: "9500", proto: "tcp", state: "enabled" }   # Longhorn Manager
+    - { port: "9501", proto: "tcp", state: "enabled" }   # Longhorn Manager Metrics
     - { port: "9735", proto: "tcp", state: "enabled" }   # Longhorn Engine
     - { port: "2049", proto: "tcp", state: "enabled" }   # NFS (Backup Target)
     - { port: "111", proto: "tcp", state: "enabled" }    # RPC Bind
