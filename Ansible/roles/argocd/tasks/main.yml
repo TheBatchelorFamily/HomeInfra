@@ -25,6 +25,7 @@
       --version {{ argocd_chart_version }} \
       --set server.service.type=LoadBalancer \
       --set server.service.externalTrafficPolicy=Local \
+      --set server.service.annotations."metallb\.universe\.tf/address-pool"=argocd-pool \
       --set configs.params.server.insecure=true \
       --timeout 10m
   timeout: 900
