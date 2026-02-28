@@ -3,6 +3,8 @@ controller:
 
 service:
   port: 80 # Change this from 8080 to 80
+  annotations:
+    metallb.universe.tf/address-pool: homeassistant-pool
 
 # CHANGE HERE: Remove 'main' nesting
 ingress:
