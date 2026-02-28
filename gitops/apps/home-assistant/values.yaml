@@ -13,9 +13,9 @@ ingress:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: batchelorparty.com
+    - host: ha.batchelorparty.com
       paths:
-        - path: /ha
+        - path: /
           pathType: Prefix
 
 persistence:
