@@ -19,7 +19,7 @@ spec:
         valueFiles:
           - $HomeInfra/gitops/apps/home-assistant/values.yaml
 
-    - repoURL: git@github.com:TheBatchelorFamily/HomeInfra.git
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
       targetRevision: main
       ref: HomeInfra
 

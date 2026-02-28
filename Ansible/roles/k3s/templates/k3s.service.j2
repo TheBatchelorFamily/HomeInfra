@@ -6,16 +6,16 @@ After=network-online.target firewalld.service
 [Service]
 Type={{ 'notify' if 'master' in group_names else 'exec' }}
 ExecStart=/usr/local/bin/k3s {{ 'server' if 'master' in group_names else 'agent' }} \
-    {% if 'master' in group_names %}
+{% if 'master' in group_names %}
     --write-kubeconfig-mode 644 \
     --cluster-init \
-    --node-ip={{ ansible_host }} \
+    {{ extra_server_args }}
     {% if token is defined %}--token {{ token }}{% endif %}
-    {% else %}
+{% else %}
     --server https://{{ master_ip }}:6443 \
     --token {{ hostvars[groups['master'][0]]['token'] }} \
-    --node-ip={{ ansible_host }}
-    {% endif %}
+    {{ extra_agent_args }}
+{% endif %}
 
 KillMode=process
 Delegate=yes
