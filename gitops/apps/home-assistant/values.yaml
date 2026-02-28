@@ -3,8 +3,8 @@ controller:
 
 service:
   port: 80 # Change this from 8080 to 80
-  annotations:
-    metallb.universe.tf/address-pool: homeassistant-pool
+  # annotations:
+  #   metallb.universe.tf/address-pool: homeassistant-pool
 
 # CHANGE HERE: Remove 'main' nesting
 ingress:
@@ -13,7 +13,7 @@ ingress:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: ha.home
+    - host: batchelorparty.com/ha
       paths:
         - path: /
           pathType: Prefix

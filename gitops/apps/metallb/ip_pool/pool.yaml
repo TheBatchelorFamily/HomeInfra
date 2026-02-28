@@ -36,21 +36,21 @@ spec:
     - argocd-pool
 
 # HomeAssistant Pool
----
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
-metadata:
-  name: homeassistant-pool
-  namespace: metallb-system
-spec:
-  addresses:
-    - 192.168.98.201/32
----
-apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
-metadata:
-  name: homeassistant-l2
-  namespace: metallb-system
-spec:
-  ipAddressPools:
-    - homeassistant-pool
+# ---
+# apiVersion: metallb.io/v1beta1
+# kind: IPAddressPool
+# metadata:
+#   name: homeassistant-pool
+#   namespace: metallb-system
+# spec:
+#   addresses:
+#     - 192.168.98.201/32
+# ---
+# apiVersion: metallb.io/v1beta1
+# kind: L2Advertisement
+# metadata:
+#   name: homeassistant-l2
+#   namespace: metallb-system
+# spec:
+#   ipAddressPools:
+#     - homeassistant-pool
