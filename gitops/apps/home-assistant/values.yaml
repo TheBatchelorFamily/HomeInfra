@@ -18,8 +18,8 @@ ingress:
 image:
   tag: "2026.2.3"
 
-securityContext:
-  privileged: true
+strategy:
+  type: Recreate
 
 persistence:
   enabled: true
