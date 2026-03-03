@@ -19,7 +19,7 @@ persistence:
   enabled: true
   accessMode: ReadWriteOnce
   size: 5Gi
-  storageClass: "local-path"
+  storageClass: "longhorn"
 
 homeAssistant:
   configuration: |-
