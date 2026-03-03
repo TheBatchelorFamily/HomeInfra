@@ -24,11 +24,7 @@ securityContext:
     add:
       - SYS_ADMIN
 
-podSecurityContext:
-  allowPrivilegeEscalation: true
-  capabilities:
-    add:
-      - SYS_ADMIN
+podSecurityContext: {}
 
 persistence:
   enabled: true
