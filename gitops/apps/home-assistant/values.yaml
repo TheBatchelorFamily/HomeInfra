@@ -18,6 +18,12 @@ ingress:
 image:
   tag: "2026.2.3"
 
+securityContext:
+  allowPrivilegeEscalation: true
+  capabilities:
+    add:
+      - SYS_ADMIN
+
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
