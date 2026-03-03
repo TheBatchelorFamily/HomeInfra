@@ -19,10 +19,7 @@ image:
   tag: "2026.2.3"
 
 securityContext:
-  allowPrivilegeEscalation: true
-  capabilities:
-    add:
-      - SYS_ADMIN
+  privileged: true
 
 persistence:
   enabled: true
@@ -56,11 +53,6 @@ homeAssistant:
     # scene: !include scenes.yaml
   setupHacsJobs:
     enabled: true
-  securityContext:
-    allowPrivilegeEscalation: true
-    capabilities:
-      add:
-        - SYS_ADMIN
 
 # examples for adding USB devices or other host volumes
 #extraVolumes:
