@@ -32,7 +32,7 @@ homeAssistant:
     homeassistant:
       time_zone: America/Chicago
       temperature_unit: F
-      unit_system: imperial
+      unit_system: US customary
 
     http:
       use_x_forwarded_for: true
