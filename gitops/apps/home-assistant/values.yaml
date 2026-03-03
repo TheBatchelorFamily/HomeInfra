@@ -1,14 +1,12 @@
-controller:
-  type: StatefulSet
+# values for the small-hack home-assistant chart
+# https://github.com/small-hack/home-assistant-chart
 
 service:
-  port: 80 # Change this from 8080 to 80
-  # annotations:
-  #   metallb.universe.tf/address-pool: homeassistant-pool
+  port: 80
 
-# CHANGE HERE: Remove 'main' nesting
 ingress:
   enabled: true
+  className: traefik
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web
@@ -24,29 +22,39 @@ persistence:
   size: 5Gi
   storageClass: ""
 
-configuration:
-  enabled: true
-  forceInit: true
-  trusted_proxies:
-    - 10.42.0.0/16 # Pod Network (Traefik's IP is here)
-    - 10.43.0.0/16 # Service Network
-    - 192.168.98.0/24 # Your Local Network (Optional, but helpful)
-  templateConfig: |-
-      # Loads default set of integrations. Do not remove.
-      default_config:
+homeAssistant:
+  configuration: |-
+    # Loads default set of integrations. Do not remove.
+    default_config:
 
-      {{- if .Values.ingress.enabled }}
-      http:
-        use_x_forwarded_for: true
-        trusted_proxies:
-          {{- range .Values.configuration.trusted_proxies }}
-          - {{ . }}
-          {{- end }}
-      {{- end}}
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+        - 10.42.0.0/16 # Pod Network (Traefik's IP is here)
+        - 10.43.0.0/16 # Service Network
+        - 192.168.98.0/24 # Your Local Network (Optional, but helpful)
 
-      frontend:
-        themes: !include_dir_merge_named themes
+    frontend:
+      themes: !include_dir_merge_named themes
 
-      automation: !include automations.yaml
-      script: !include scripts.yaml
-      scene: !include scenes.yaml
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+
+    homeassistant:
+      time_zone: America/Chicago
+      temperature_unit: F
+      unit_system: imperial
+  setupHacsJobs:
+    enabled: true
+
+# examples for adding USB devices or other host volumes
+#extraVolumes:
+#  - name: usb
+#    hostPath:
+#      path: "/dev/serial/by-id/usb-..."
+#      type: CharDevice
+#extraVolumeMounts:
+#  - name: usb
+#    mountPath: /dev/ttyACM0
+#    readOnly: true
