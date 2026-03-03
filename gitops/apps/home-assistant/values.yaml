@@ -24,6 +24,12 @@ securityContext:
     add:
       - SYS_ADMIN
 
+podSecurityContext:
+  allowPrivilegeEscalation: true
+  capabilities:
+    add:
+      - SYS_ADMIN
+
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
