@@ -24,8 +24,6 @@ securityContext:
     add:
       - SYS_ADMIN
 
-podSecurityContext: {}
-
 persistence:
   enabled: true
   accessMode: ReadWriteOnce
@@ -58,6 +56,11 @@ homeAssistant:
     # scene: !include scenes.yaml
   setupHacsJobs:
     enabled: true
+  securityContext:
+    allowPrivilegeEscalation: true
+    capabilities:
+      add:
+        - SYS_ADMIN
 
 # examples for adding USB devices or other host volumes
 #extraVolumes:
