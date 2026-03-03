@@ -19,12 +19,14 @@ persistence:
   enabled: true
   accessMode: ReadWriteOnce
   size: 5Gi
-  storageClass: ""
+  storageClass: "local-path"
 
 homeAssistant:
   configuration: |-
-    # Loads default set of integrations. Do not remove.
-    default_config:
+    homeassistant:
+      time_zone: America/Chicago
+      temperature_unit: F
+      unit_system: imperial
 
     http:
       use_x_forwarded_for: true
@@ -33,17 +35,15 @@ homeAssistant:
         - 10.43.0.0/16 # Service Network
         - 192.168.98.0/24 # Your Local Network (Optional, but helpful)
 
+    # Loads default set of integrations. Do not remove.
+    default_config:
+
     frontend:
       themes: !include_dir_merge_named themes
 
     automation: !include automations.yaml
     script: !include scripts.yaml
     scene: !include scenes.yaml
-
-    homeassistant:
-      time_zone: America/Chicago
-      temperature_unit: F
-      unit_system: imperial
   setupHacsJobs:
     enabled: true
 
