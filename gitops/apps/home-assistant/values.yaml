@@ -47,10 +47,15 @@ homeAssistant:
     frontend:
       themes: !include_dir_merge_named themes
 
-    # Add automations, scripts, and scenes as needed:
-    # automation: !include automations.yaml
-    # script: !include scripts.yaml
-    # scene: !include scenes.yaml
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml
+  automations: |
+    []
+  scenes: |
+    []
+  themes: |
+    {}
   setupHacsJobs:
     enabled: true
 
