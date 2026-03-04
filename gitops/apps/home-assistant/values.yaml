@@ -33,6 +33,7 @@ homeAssistant:
       time_zone: America/Chicago
       temperature_unit: F
       unit_system: US customary
+      external_url: https://ha.batchelorparty.com
 
     http:
       use_x_forwarded_for: true
