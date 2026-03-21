@@ -209,3 +209,8 @@
 - name: Force immediate firewall reload
   command: firewall-cmd --reload
   changed_when: true
+
+- name: Restart firewalld for proper nftables synchronization (AlmaLinux)
+  systemd:
+    name: firewalld
+    state: restarted
