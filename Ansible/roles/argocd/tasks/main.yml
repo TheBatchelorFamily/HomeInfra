@@ -45,6 +45,10 @@
     metadata:
       name: argocd-server
       namespace: {{ argocd_namespace }}
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+        traefik.ingress.kubernetes.io/router.tls: "true"
+        traefik.ingress.kubernetes.io/router.tls.options: default
     spec:
       rules:
       - host: argo.batchelorparty.com
@@ -56,7 +60,7 @@
               service:
                 name: argocd-server
                 port:
-                  number: 80
+                  number: 443
     EOF
   register: argocd_ingress
 
