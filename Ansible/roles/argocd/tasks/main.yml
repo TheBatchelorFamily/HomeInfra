@@ -47,8 +47,6 @@
       namespace: {{ argocd_namespace }}
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-        traefik.ingress.kubernetes.io/router.tls: "true"
-        traefik.ingress.kubernetes.io/router.tls.options: default
     spec:
       ingressClassName: traefik
       rules:
