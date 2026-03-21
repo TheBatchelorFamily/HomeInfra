@@ -126,6 +126,17 @@
     - "10.43.0.0/16"
   failed_when: false # Ignore if they weren't there
 
+- name: Disable RP Filter for Flannel
+  sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.eno1.rp_filter
+  ignore_errors: true
+
 - name: Configure Trusted Zone for K3s
   firewalld:
     zone: trusted
@@ -157,6 +168,25 @@
 - name: Set Trusted Zone target to ACCEPT
   command: firewall-cmd --permanent --zone=trusted --set-target=ACCEPT
   changed_when: true
+
+- name: Bind CNI interfaces to trusted zone
+  firewalld:
+    zone: trusted
+    interface: "{{ item }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - cni0
+    - flannel.1
+
+- name: Trust the local management subnet
+  firewalld:
+    zone: trusted
+    source: "192.168.98.0/24"
+    state: enabled
+    permanent: yes
+    immediate: yes
 
 - name: Open Required Ports in Default Zone
   firewalld:

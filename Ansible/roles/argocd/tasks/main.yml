@@ -50,6 +50,7 @@
         traefik.ingress.kubernetes.io/router.tls: "true"
         traefik.ingress.kubernetes.io/router.tls.options: default
     spec:
+      ingressClassName: traefik
       rules:
       - host: argo.batchelorparty.com
         http:
@@ -60,7 +61,7 @@
               service:
                 name: argocd-server
                 port:
-                  number: 443
+                  number: 80
     EOF
   register: argocd_ingress
 
