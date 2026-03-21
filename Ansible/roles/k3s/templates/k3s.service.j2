@@ -1,9 +1,11 @@
 [Unit]
 Description=Lightweight Kubernetes
 Documentation=https://k3s.io
+Wants=network-online.target firewalld.service
 After=network-online.target firewalld.service
 
 [Service]
+ExecStartPre=/usr/bin/sleep 10
 Type={{ 'notify' if 'master' in group_names else 'exec' }}
 ExecStart=/usr/local/bin/k3s {{ 'server' if 'master' in group_names else 'agent' }} \
 {% if 'master' in group_names %}
@@ -25,7 +27,8 @@ LimitCORE=infinity
 TasksMax=infinity
 TimeoutStartSec=0
 Restart=always
-RestartSec=5
+# Bump this slightly to give Fedora time to finish post-update I/O
+RestartSec=20s
 
 [Install]
 WantedBy=multi-user.target

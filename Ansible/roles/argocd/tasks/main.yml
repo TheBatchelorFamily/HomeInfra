@@ -23,10 +23,10 @@
     helm upgrade --install argocd argocd/argo-cd \
       --namespace {{ argocd_namespace }} \
       --version {{ argocd_chart_version }} \
-      --set server.service.type=LoadBalancer \
-      --set server.service.externalTrafficPolicy=Local \
-      --set server.service.annotations."metallb\.universe\.tf/address-pool"=argocd-pool \
+      --set server.service.type=ClusterIP \
       --set configs.params.server.insecure=true \
+      --set repoServer.livenessProbe.timeoutSeconds=10 \
+      --set repoServer.readinessProbe.timeoutSeconds=10 \
       --timeout 10m
   timeout: 900
 
@@ -35,6 +35,30 @@
     export KUBECONFIG={{ kubeconfig_path }}
     kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
   timeout: 900
+
+- name: Create ArgoCD ingress
+  shell: |
+    export KUBECONFIG={{ kubeconfig_path }}
+    cat <<EOF | kubectl apply -f -
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: argocd-server
+      namespace: {{ argocd_namespace }}
+    spec:
+      rules:
+      - host: argo.batchelorparty.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80
+    EOF
+  register: argocd_ingress
 
 - name: Register GitOps repository in ArgoCD
   shell: |
@@ -62,7 +86,7 @@
       - "To get the initial admin password, run:"
       - "  kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
       - "Then log in and change the password manually in the ArgoCD UI."
-      - "Access ArgoCD at the LoadBalancer IP address"
+      - "Access ArgoCD at http://argo.batchelorparty.com"
 
 - name: Apply GitOps Bootstrap (App-of-Apps)
   shell: |

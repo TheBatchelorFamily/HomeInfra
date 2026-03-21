@@ -7,7 +7,7 @@
       - python3-pip
       - firewalld
     state: present
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora', 'AlmaLinux']
 
 - name: Remove legacy iptables-services package
   yum:
@@ -18,7 +18,14 @@
   selinux:
     policy: targeted
     state: enforcing
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora']
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'Fedora', 'AlmaLinux']
+
+- name: Ensure Flannel runtime directory persists across reboots
+  copy:
+    dest: /etc/tmpfiles.d/k3s-flannel.conf
+    content: |
+      d /run/flannel 0755 root root -
+    mode: '0644'
 
 - name: Ensure Kubernetes sysctl settings
   copy:
@@ -31,19 +38,23 @@
 - name: Force iptables to use nftables backend
   command: update-alternatives --set iptables /usr/sbin/iptables-nft
   changed_when: false
+  failed_when: false
 
 - name: Force ip6tables to use nftables backend
   command: update-alternatives --set ip6tables /usr/sbin/ip6tables-nft
   changed_when: false
-  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
+  failed_when: false
+  when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux', 'AlmaLinux']
 
 - name: Force arptables to use nftables backend
   command: update-alternatives --set arptables /usr/sbin/arptables-nft
   changed_when: false
+  failed_when: false
 
 - name: Force ebtables to use nftables backend
   command: update-alternatives --set ebtables /usr/sbin/ebtables-nft
   changed_when: false
+  failed_when: false
 
 - name: Enable IPv4 forwarding
   sysctl:
@@ -79,6 +90,11 @@
     path: /etc/sudoers
     validate: 'visudo -cf %s'
 
+- name: Install pip3 for Python
+  package:
+    name: python3-pip
+    state: present
+
 - name: Install Python kubernetes libraries
   pip:
     name: 
@@ -97,6 +113,18 @@
     zone: trusted
     state: present
     permanent: yes
+
+- name: Remove K3s CIDRs from default zone to prevent conflicts
+  firewalld:
+    zone: "{{ zone_default }}"
+    source: "{{ item }}"
+    state: disabled
+    permanent: yes
+    immediate: yes
+  loop:
+    - "10.42.0.0/16"
+    - "10.43.0.0/16"
+  failed_when: false # Ignore if they weren't there
 
 - name: Configure Trusted Zone for K3s
   firewalld:
@@ -158,6 +186,25 @@
     immediate: yes
     zone: "{{ item }}"
   loop: ["{{ zone_default | default('public') }}", "trusted"]
+
+- name: Ensure Firewalld allows masquerading for the pod network
+  firewalld:
+    permanent: yes
+    immediate: yes
+    zone: public
+    rich_rule: 'rule family="ipv4" source address="10.42.0.0/16" masquerade'
+    state: enabled
+
+- name: Add overlay to modules-load
+  copy:
+    content: "overlay"
+    dest: /etc/modules-load.d/overlay.conf
+    mode: "0644"
+
+- name: Load overlay module
+  modprobe:
+    name: overlay
+    state: present
 
 - name: Force immediate firewall reload
   command: firewall-cmd --reload
