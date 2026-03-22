@@ -37,16 +37,16 @@ persistence:
   size: 5Gi
   storageClass: "longhorn"
 
-extraVolumes:
-  - name: ha-scripts
-    configMap:
-      name: ha-config-scripts
+# extraVolumes:
+#   - name: ha-scripts
+#     configMap:
+#       name: ha-config-scripts
 
-extraVolumeMounts:
-  - name: ha-scripts
-    mountPath: /config/scripts.yaml
-    subPath: scripts.yaml
-    readOnly: true
+# extraVolumeMounts:
+#   - name: ha-scripts
+#     mountPath: /config/scripts.yaml
+#     subPath: scripts.yaml
+#     readOnly: true
 
 homeAssistant:
   configuration: |-
@@ -72,7 +72,15 @@ homeAssistant:
     automation: !include automations.yaml
     script: !include scripts.yaml
     scene: !include scenes.yaml
-
+  scripts: |
+    # default scripts content
+    # add your scripts here
+    # Example:
+    # my_script:
+    #   sequence:
+    #     - service: light.turn_on
+    #       target:
+    #         entity_id: light.living_room
   setupHacsJobs:
     enabled: true
 
