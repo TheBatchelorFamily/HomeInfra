@@ -38,6 +38,7 @@ homeAssistant:
     http:
       use_x_forwarded_for: true
       trusted_proxies:
+        - 10.42.0.1
         - 10.42.0.0/24 # Traefik's IP range (optional, but recommended for accurate client IP logging)
         - 10.42.0.0/16 # Pod Network (Traefik's IP is here)
         - 10.43.0.0/16 # Service Network

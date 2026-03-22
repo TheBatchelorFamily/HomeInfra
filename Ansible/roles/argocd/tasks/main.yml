@@ -21,13 +21,16 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     helm upgrade --install argocd argocd/argo-cd \
-      --namespace {{ argocd_namespace }} \
+      --namespace argocd \
       --version {{ argocd_chart_version }} \
       --set server.service.type=ClusterIP \
+      --set server.insecure=true \
       --set configs.params.server.insecure=true \
-      --set repoServer.livenessProbe.timeoutSeconds=10 \
-      --set repoServer.readinessProbe.timeoutSeconds=10 \
+      --set configs.cm.url=https://argo.batchelorparty.com \
+      --set server.extraArgs[0]=--insecure \
       --timeout 10m
+
+
   timeout: 900
 
 - name: Wait for ArgoCD server deployment
@@ -36,33 +39,34 @@
     kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
   timeout: 900
 
-- name: Create ArgoCD ingress
+- name: Apply Traefik IngressRoute for ArgoCD (h2c for gRPC)
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
-    cat <<EOF | kubectl apply -f -
-    apiVersion: networking.k8s.io/v1
-    kind: Ingress
+    cat <<'EOF' | kubectl apply -f -
+    apiVersion: traefik.io/v1alpha1
+    kind: IngressRoute
     metadata:
       name: argocd-server
       namespace: {{ argocd_namespace }}
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-        traefik.ingress.kubernetes.io/router.tls=true
     spec:
-      ingressClassName: traefik
-      rules:
-      - host: argo.batchelorparty.com
-        http:
-          paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: argocd-server
-                port:
-                  number: 80
+      entryPoints:
+        - websecure
+      routes:
+        - match: Host(`argo.batchelorparty.com`) && Headers(`content-type`,`application/grpc`)
+          kind: Rule
+          services:
+            - name: argocd-server
+              port: 80
+              scheme: h2c
+        - match: Host(`argo.batchelorparty.com`)
+          kind: Rule
+          services:
+            - name: argocd-server
+              port: 80
+      tls:
+        secretName: "" 
     EOF
-  register: argocd_ingress
+
 
 - name: Register GitOps repository in ArgoCD
   shell: |

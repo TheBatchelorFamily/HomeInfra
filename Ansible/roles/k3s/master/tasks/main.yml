@@ -16,6 +16,28 @@
     state: started
     enabled: yes
 
+- name: Configure Traefik forwarded headers for ArgoCD
+  copy:
+    dest: /var/lib/rancher/k3s/server/manifests/traefik-config.yaml
+    owner: root
+    group: root
+    mode: 0644
+    content: |
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: traefik
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          ports:
+            web:
+              forwardedHeaders:
+                insecure: true
+            websecure:
+              forwardedHeaders:
+                insecure: true
+
 - name: Wait for node-token
   wait_for:
     path: "{{ k3s_server_location }}/server/node-token"
