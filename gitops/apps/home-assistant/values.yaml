@@ -28,6 +28,17 @@ persistence:
   size: 5Gi
   storageClass: "longhorn"
 
+extraVolumes:
+  - name: ha-scripts
+    configMap:
+      name: ha-config-scripts
+
+extraVolumeMounts:
+  - name: ha-scripts
+    mountPath: /config/scripts.yaml
+    subPath: scripts.yaml
+    readOnly: true
+
 homeAssistant:
   configuration: |-
     homeassistant:

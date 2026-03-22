@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ha-config-scripts
+  namespace: home-assistant
+data:
+  scripts.yaml: |
+    # default scripts content
+    # add your scripts here
+    # Example:
+    # my_script:
+    #   sequence:
+    #     - service: light.turn_on
+    #       target:
+    #         entity_id: light.living_room
