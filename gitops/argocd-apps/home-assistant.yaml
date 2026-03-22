@@ -26,7 +26,7 @@ spec:
   source:
     repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
     targetRevision: main
-    path: HomeInfra/gitops/apps/home-assistant
+    path: gitops/apps/home-assistant
     helm:
       repoURL: https://small-hack.github.io/home-assistant-chart
       chart: home-assistant
