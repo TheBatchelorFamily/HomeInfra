@@ -8,7 +8,7 @@ ingress:
   enabled: true
   className: traefik
   annotations:
-    traefik.ingress.kubernetes.io/router.forwardedHeaders.insecure: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
     - host: ha.batchelorparty.com
       paths:
