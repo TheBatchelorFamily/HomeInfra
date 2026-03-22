@@ -11,28 +11,22 @@ spec:
     server: https://kubernetes.default.svc
     namespace: home-assistant
 
-  # sources:
-  #   - repoURL: https://small-hack.github.io/home-assistant-chart
-  #     chart: home-assistant
-  #     targetRevision: "1.11.0"
-  #     helm:
-  #       valueFiles:
-  #         - $HomeInfra/gitops/apps/home-assistant/values.yaml
-
-  #   - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
-  #     targetRevision: main
-  #     ref: HomeInfra
-
-  source:
-    repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
-    targetRevision: main
-    path: gitops/apps/home-assistant
-    helm:
-      repoURL: https://small-hack.github.io/home-assistant-chart
+  sources:
+    - repoURL: https://small-hack.github.io/home-assistant-chart
       chart: home-assistant
       targetRevision: "1.11.0"
-      valueFiles:
-        - values.yaml
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/home-assistant/values.yaml
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      path: gitops/apps/home-assistant/manifests
+
 
   syncPolicy:
     automated:
