@@ -44,7 +44,7 @@ spec:
   ignoreDifferences:
     - group: ""
       kind: Secret
-      name: uptime-kuma-credentials
+      name: my-kuma-secret
       jsonPointers:
         - /stringData
         - /data
