@@ -15,8 +15,8 @@ spec:
         valueFiles:
           - $HomeInfra/gitops/apps/uptime-kuma/values.yaml
 
-    - repoURL: https://github.com/moellere/uptime-kuma-reconciler
-      chart: uptime-kuma-reconciler
+    - repoURL: https://github.com/moellere/uptime-kuma-reconciler.git
+      path: charts/uptime-kuma-reconciler
       targetRevision: main
       helm:
         valueFiles:
