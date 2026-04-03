@@ -14,3 +14,4 @@ staticMonitors:
       type: http
       url: https://itsmeganificent.com/
       interval: 600
+      conditions: []
