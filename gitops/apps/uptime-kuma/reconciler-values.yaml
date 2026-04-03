@@ -1,5 +1,15 @@
 kumaUrl: "http://kuma.batchelorparty.com"
+
 resyncInterval: "300"
+
 logLevel: "INFO"
+
 credentials:
   existingSecret: "my-kuma-secret"
+
+monitors:
+  - name: Web Dashboard
+    type: http
+    url: https://itsmeganificent.com/
+    group: Web Services
+    interval: 600
