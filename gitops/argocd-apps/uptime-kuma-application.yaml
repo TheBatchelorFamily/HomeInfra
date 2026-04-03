@@ -15,13 +15,16 @@ spec:
         valueFiles:
           - $HomeInfra/gitops/apps/uptime-kuma/values.yaml
 
-    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+    - repoURL: https://github.com/moellere/uptime-kuma-reconciler
+      chart: uptime-kuma-reconciler
       targetRevision: main
-      ref: HomeInfra
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/uptime-kuma/reconciler-values.yaml
 
     - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
       targetRevision: main
-      path: gitops/apps/uptime-kuma/manifests
+      ref: HomeInfra
 
   destination:
     server: https://kubernetes.default.svc
@@ -34,3 +37,10 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: uptime-kuma-credentials
+      jsonPointers:
+        - /stringData
+        - /data

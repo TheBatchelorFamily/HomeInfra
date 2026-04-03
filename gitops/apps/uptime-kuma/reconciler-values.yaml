@@ -1,0 +1,7 @@
+kumaUrl: "http://kuma.batchelorparty.com"
+resyncInterval: "300"
+logLevel: "INFO"
+credentials:
+  existingSecret: "uptime-kuma-credentials"
+  usernameKey: "username"
+  passwordKey: "password"
