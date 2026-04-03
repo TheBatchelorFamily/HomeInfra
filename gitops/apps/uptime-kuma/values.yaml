@@ -1,11 +1,14 @@
 ingress:
   enabled: true
-  ingressClassName: nginx
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
-    - host: uptime-kuma.example.com
+    - host: kuma.batchelorparty.com
       paths:
         - path: /
           pathType: Prefix
+
 persistence:
   enabled: true
   accessModes:
