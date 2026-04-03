@@ -10,8 +10,7 @@ credentials:
 staticMonitors:
   enabled: true
   monitors:
-    - name: Web Dashboard
+    - name: Portfolio Website
       type: http
       url: https://itsmeganificent.com/
-      group: Web Services
       interval: 600
