@@ -21,3 +21,34 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+sidecars:
+  - name: uptime-kuma-reconciler
+    image: louislam/uptime-kuma-reconciler:latest
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: UPTIME_KUMA_URL
+        value: "http://localhost:3001"
+      - name: UPTIME_KUMA_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: uptime-kuma-api-key
+            key: api-key
+      - name: WATCH_NAMESPACE
+        value: ""
+      - name: RECONCILE_INTERVAL
+        value: "60"
+      - name: LOG_LEVEL
+        value: "info"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      readOnlyRootFilesystem: true
+
