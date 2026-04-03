@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uptime-kuma-reconciler
+  namespace: uptime-kuma
+  labels:
+    app: uptime-kuma-reconciler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uptime-kuma-reconciler
+  template:
+    metadata:
+      labels:
+        app: uptime-kuma-reconciler
+    spec:
+      serviceAccountName: uptime-kuma-reconciler
+      containers:
+      - name: reconciler
+        image: louislam/uptime-kuma-reconciler:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: UPTIME_KUMA_URL
+          value: "http://uptime-kuma:80"
+        - name: UPTIME_KUMA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: uptime-kuma-api-key
+              key: api-key
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: RECONCILE_INTERVAL
+          value: "60"
+        - name: LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: uptime-kuma-reconciler
+  namespace: uptime-kuma
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: uptime-kuma-reconciler
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: uptime-kuma-reconciler
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: uptime-kuma-reconciler
+subjects:
+- kind: ServiceAccount
+  name: uptime-kuma-reconciler
+  namespace: uptime-kuma
