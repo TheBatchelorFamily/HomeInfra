@@ -13,7 +13,7 @@
     name: k3s-node
     daemon_reload: yes
     state: started
-    enabled: yes  
+    enabled: yes
 
 - name: Trust the Flannel/CNI interfaces wildcard
   command: "firewall-cmd --permanent --zone=trusted --add-interface={{ item }}"

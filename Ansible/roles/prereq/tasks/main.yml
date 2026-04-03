@@ -25,7 +25,7 @@
     dest: /etc/tmpfiles.d/k3s-flannel.conf
     content: |
       d /run/flannel 0755 root root -
-    mode: '0644'
+    mode: "0644"
 
 - name: Ensure Kubernetes sysctl settings
   copy:
@@ -100,7 +100,7 @@
     content: "vxlan\n"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Load vxlan kernel module now
   modprobe:
@@ -109,11 +109,11 @@
 
 - name: Add /usr/local/bin to sudo secure_path
   lineinfile:
-    line: 'Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin'
+    line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin"
     regexp: "Defaults(\\s)*secure_path(\\s)*="
     state: present
     path: /etc/sudoers
-    validate: 'visudo -cf %s'
+    validate: "visudo -cf %s"
 
 - name: Install pip3 for Python
   package:
@@ -122,7 +122,7 @@
 
 - name: Install Python kubernetes libraries
   pip:
-    name: 
+    name:
       - kubernetes
       - pyyaml
     state: present
@@ -159,14 +159,14 @@
     permanent: yes
     immediate: yes
   loop:
-    - "10.42.0.0/16"      # Pod CIDR
-    - "10.43.0.0/16"      # Service CIDR
-    - "192.168.98.0/24"   # Local Management
+    - "10.42.0.0/16" # Pod CIDR
+    - "10.43.0.0/16" # Service CIDR
+    - "192.168.98.0/24" # Local Management
   register: zone_result
   # Ignore the error if the source is already bound to the zone
-  failed_when: 
-    - zone_result.failed is defined 
-    - zone_result.failed 
+  failed_when:
+    - zone_result.failed is defined
+    - zone_result.failed
     - "'ZONE_CONFLICT' not in zone_result.msg"
 
 - name: Set Trusted Zone target to ACCEPT
@@ -240,7 +240,7 @@
       unmanaged-devices=interface-name:flannel.*
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
 
 - name: Reload NetworkManager
   systemd:

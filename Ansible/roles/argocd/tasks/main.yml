@@ -30,7 +30,6 @@
       --set server.extraArgs[0]=--insecure \
       --timeout 10m
 
-
   timeout: 900
 
 - name: Wait for ArgoCD server deployment
@@ -66,7 +65,6 @@
       tls:
         secretName: "" 
     EOF
-
 
 - name: Register GitOps repository in ArgoCD
   shell: |
