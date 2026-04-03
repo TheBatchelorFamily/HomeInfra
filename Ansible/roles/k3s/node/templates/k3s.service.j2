@@ -1,13 +1,20 @@
 [Unit]
 Description=Lightweight Kubernetes
 Documentation=https://k3s.io
-After=network-online.target
+Wants=network-online.target firewalld.service
+After=network-online.target firewalld.service
 
 [Service]
 Type=notify
+ExecStartPre=/usr/bin/sleep 30
 ExecStartPre=-/sbin/modprobe br_netfilter
 ExecStartPre=-/sbin/modprobe overlay
-ExecStart=/usr/local/bin/k3s agent --server https://{{ master_ip }}:6443 --token {{ hostvars[groups['master'][0]]['token'] }} {{ extra_agent_args | default("") }}
+ExecStartPre=-/sbin/modprobe vxlan
+
+ExecStart=/usr/local/bin/k3s agent --server https://{{ master_ip }}:6443 \
+    --token {{ hostvars[groups['master'][0]]['token'] }} \
+    {{ extra_agent_args | default("") }}
+
 KillMode=process
 Delegate=yes
 # Having non-zero Limit*s causes performance problems due to accounting overhead
@@ -18,7 +25,7 @@ LimitCORE=infinity
 TasksMax=infinity
 TimeoutStartSec=0
 Restart=always
-RestartSec=5s
+RestartSec=20s
 
 [Install]
 WantedBy=multi-user.target

@@ -35,6 +35,18 @@
       net.bridge.bridge-nf-call-ip6tables = 1
       net.ipv4.ip_forward = 1
 
+- name: Disable RP Filter for Flannel (Loose Mode)
+  sysctl:
+    name: "{{ item }}"
+    value: "2"
+    state: present
+    reload: yes
+    ignoreerrors: yes
+  loop:
+    - net.ipv4.conf.all.rp_filter
+    - net.ipv4.conf.default.rp_filter
+    - net.ipv4.conf.eno1.rp_filter
+
 - name: Force iptables to use nftables backend
   command: update-alternatives --set iptables /usr/sbin/iptables-nft
   changed_when: false
@@ -73,13 +85,26 @@
 
 - name: Add br_netfilter to modules-load
   copy:
-    content: "br_netfilter"
+    content: "br_netfilter\n"
     dest: /etc/modules-load.d/br_netfilter.conf
     mode: "0644"
 
 - name: Load br_netfilter
   modprobe:
     name: br_netfilter
+    state: present
+
+- name: Ensure vxlan module loads at boot
+  copy:
+    dest: /etc/modules-load.d/vxlan.conf
+    content: "vxlan\n"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Load vxlan kernel module now
+  modprobe:
+    name: vxlan
     state: present
 
 - name: Add /usr/local/bin to sudo secure_path
@@ -126,18 +151,7 @@
     - "10.43.0.0/16"
   failed_when: false # Ignore if they weren't there
 
-- name: Disable RP Filter for Flannel
-  sysctl:
-    name: "{{ item }}"
-    value: "1"
-    state: present
-    reload: yes
-  loop:
-    - net.ipv4.conf.all.rp_filter
-    - net.ipv4.conf.eno1.rp_filter
-  ignore_errors: true
-
-- name: Configure Trusted Zone for K3s
+- name: Configure Trusted Zone for K3s Sources
   firewalld:
     zone: trusted
     source: "{{ item }}"
@@ -145,25 +159,15 @@
     permanent: yes
     immediate: yes
   loop:
-    - "10.42.0.0/16" # Pod CIDR
-    - "10.43.0.0/16" # Service CIDR
+    - "10.42.0.0/16"      # Pod CIDR
+    - "10.43.0.0/16"      # Service CIDR
+    - "192.168.98.0/24"   # Local Management
   register: zone_result
   # Ignore the error if the source is already bound to the zone
   failed_when: 
     - zone_result.failed is defined 
     - zone_result.failed 
     - "'ZONE_CONFLICT' not in zone_result.msg"
-
-- name: Allow all traffic from Pod/Service CIDRs (Fedora 41 Rich Rules)
-  firewalld:
-    permanent: yes
-    immediate: yes
-    rich_rule: 'rule family="ipv4" source address="{{ item }}" accept'
-    zone: trusted
-    state: enabled
-  loop:
-    - "10.42.0.0/16"
-    - "10.43.0.0/16"
 
 - name: Set Trusted Zone target to ACCEPT
   command: firewall-cmd --permanent --zone=trusted --set-target=ACCEPT
@@ -179,14 +183,6 @@
   loop:
     - cni0
     - flannel.1
-
-- name: Trust the local management subnet
-  firewalld:
-    zone: trusted
-    source: "192.168.98.0/24"
-    state: enabled
-    permanent: yes
-    immediate: yes
 
 - name: Open Required Ports in Default Zone
   firewalld:
@@ -236,11 +232,26 @@
     name: overlay
     state: present
 
-- name: Force immediate firewall reload
-  command: firewall-cmd --reload
-  changed_when: true
+- name: Ensure NetworkManager ignores flannel interfaces
+  copy:
+    dest: /etc/NetworkManager/conf.d/99-flannel.conf
+    content: |
+      [keyfile]
+      unmanaged-devices=interface-name:flannel.*
+    owner: root
+    group: root
+    mode: '0644'
 
-- name: Restart firewalld for proper nftables synchronization (AlmaLinux)
+- name: Reload NetworkManager
+  systemd:
+    name: NetworkManager
+    state: restarted
+
+- name: Pause to allow network interfaces to settle
+  pause:
+    seconds: 10
+
+- name: Restart firewalld for synchronization
   systemd:
     name: firewalld
     state: restarted

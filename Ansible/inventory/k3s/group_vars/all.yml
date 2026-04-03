@@ -3,6 +3,6 @@ k3s_version: v1.35.3+k3s1
 ansible_user: chris
 systemd_dir: /etc/systemd/system
 master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
-extra_server_args: "--node-ip={{ ansible_host }} --flannel-iface={{ ansible_default_ipv4.interface }} --flannel-backend=host-gw"
-extra_agent_args: "--node-ip={{ ansible_host }} --flannel-iface={{ ansible_default_ipv4.interface }}"
+extra_server_args: "--node-ip={{ ansible_host }}"
+extra_agent_args: "--node-ip={{ ansible_host }}"
 zone_default: "{{ ansible_facts.firewalld_default_zone | default('public') }}"
