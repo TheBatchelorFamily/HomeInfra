@@ -27,7 +27,6 @@ spec:
       targetRevision: main
       path: gitops/apps/home-assistant/manifests
 
-
   syncPolicy:
     automated:
       prune: true

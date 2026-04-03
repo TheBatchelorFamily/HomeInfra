@@ -10,7 +10,7 @@ spec:
     chart: longhorn
     targetRevision: "1.11.1"
     helm:
-      skipCrds: false 
+      skipCrds: false
       parameters:
         - name: "enableHooks"
           value: "false"

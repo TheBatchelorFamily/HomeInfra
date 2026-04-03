@@ -15,6 +15,7 @@ metadata:
   name: l2-adv
   namespace: metallb-system
 
+
 # ArgoCD Pool
 ---
 apiVersion: metallb.io/v1beta1

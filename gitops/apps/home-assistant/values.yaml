@@ -16,12 +16,12 @@ ingress:
           pathType: Prefix
 
 readinessProbe:
-  initialDelaySeconds: 30  # Give it 30s before even checking
+  initialDelaySeconds: 30 # Give it 30s before even checking
   periodSeconds: 10
-  failureThreshold: 10     # Allow 10 failures (100s total) before giving up
-  
+  failureThreshold: 10 # Allow 10 failures (100s total) before giving up
+
 livenessProbe:
-  initialDelaySeconds: 60  # Be even more generous with liveness to avoid restart loops
+  initialDelaySeconds: 60 # Be even more generous with liveness to avoid restart loops
   periodSeconds: 20
   failureThreshold: 5
 
