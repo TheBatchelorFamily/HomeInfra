@@ -107,6 +107,9 @@ config:
         - Kubernetes Docs:
             - abbr: K8s
             - url: https://kubernetes.io/docs/
+        - Portfolio site:
+            - abbr: PF
+            - url: https://itsmeganificent.com
 
     - Infrastructure:
         - Traefik Hub:
