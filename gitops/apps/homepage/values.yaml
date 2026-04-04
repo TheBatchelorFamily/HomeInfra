@@ -1,3 +1,7 @@
+config:
+  allowedHosts:
+    - home.batchelorparty.com
+
 ingress:
   enabled: true
   ingressClassName: traefik
@@ -10,124 +14,21 @@ ingress:
         - path: /
           pathType: Prefix
 
-# Homepage configuration
-config:
-  # Main configuration
-  title: "Home Infrastructure"
-  subtitle: "Batchelor Family Dashboard"
-  logo: /logo.png
-  description: "Central dashboard for home infrastructure and services"
-  theme: dark
-  color: blue
-  language: en
+volumes:
+  - name: homepage-config
+    configMap:
+      name: homepage-config
 
-  # Header style
-  headerStyle: "boxed"
-
-  # Layout
-  layout:
-    Home:
-      style: "row"
-      columns: 3
-
-  # Services section
-  services:
-    - Infrastructure:
-        - ArgoCD:
-            href: https://argocd.batchelorparty.com
-            description: GitOps continuous delivery
-            icon: argocd
-        - Uptime Kuma:
-            href: https://kuma.batchelorparty.com
-            description: Service monitoring and alerting
-            icon: uptime-kuma
-        - Longhorn:
-            href: https://longhorn.batchelorparty.com
-            description: Distributed block storage
-            icon: longhorn
-        - MetalLB:
-            description: Load balancer for bare metal
-            icon: metallb
-
-    - Smart Home:
-        - Home Assistant:
-            href: https://ha.batchelorparty.com
-            description: Home automation platform
-            icon: home-assistant
-
-    - Media & Entertainment:
-        - Plex:
-            href: https://plex.batchelorparty.com
-            description: Media streaming server
-            icon: plex
-
-    - Development:
-        - GitHub:
-            href: https://github.com/TheBatchelorFamily
-            description: Family code repositories
-            icon: github
-        - Portainer:
-            href: https://portainer.batchelorparty.com
-            description: Docker container management
-            icon: portainer
-
-  # Widgets section
-  widgets:
-    - resources:
-        cpu: true
-        memory: true
-        disk: /
-        cputemp: false
-        uptime: true
-        units: imperial
-        tempmin: 0
-        tempmax: 100
-        refresh: 10000
-
-    - search:
-        provider: duckduckgo
-        target: _blank
-
-    - datetime:
-        text_size: xl
-        format:
-          dateStyle: long
-          timeStyle: short
-          hour12: true
-
-  # Bookmarks section
-  bookmarks:
-    - Developer:
-        - GitHub:
-            - abbr: GH
-            - url: https://github.com/TheBatchelorFamily
-        - Docker Hub:
-            - abbr: DH
-            - url: https://hub.docker.com
-        - Kubernetes Docs:
-            - abbr: K8s
-            - url: https://kubernetes.io/docs/
-        - Portfolio site:
-            - abbr: PF
-            - url: https://itsmeganificent.com
-
-    - Infrastructure:
-        - Traefik Hub:
-            - abbr: TF
-            - url: https://traefik.io/hub/
-        - MetalLB:
-            - abbr: LB
-            - url: https://metallb.universe.tf/
-        - Longhorn:
-            - abbr: LH
-            - url: https://longhorn.io/
-
-  # Settings
-  settings:
-    titleToggle: true
-    search: true
-    themeToggle: true
-    message:
-      style: "info"
-      title: "Welcome!"
-      content: "This is your central dashboard for all home infrastructure services."
+volumeMounts:
+  - name: homepage-config
+    mountPath: /app/config/settings.yaml
+    subPath: settings.yaml
+  - name: homepage-config
+    mountPath: /app/config/bookmarks.yaml
+    subPath: bookmarks.yaml
+  - name: homepage-config
+    mountPath: /app/config/services.yaml
+    subPath: services.yaml
+  - name: homepage-config
+    mountPath: /app/config/widgets.yaml
+    subPath: widgets.yaml

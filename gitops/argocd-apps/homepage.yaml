@@ -20,6 +20,10 @@ spec:
       targetRevision: main
       ref: HomeInfra
 
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      path: gitops/apps/homepage/manifests
+
   destination:
     server: https://kubernetes.default.svc
     namespace: homepage
