@@ -12,3 +12,6 @@ ingress:
 
 postgresql:
   enabled: false
+
+env:
+  HBOX_DATABASE_SQLITE_PATH: /data/homebox.db?_pragma=busy_timeout=999&_pragma=journal_mode=WAL&_fk=1
