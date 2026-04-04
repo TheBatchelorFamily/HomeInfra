@@ -27,25 +27,25 @@ data:
   bookmarks.yaml: |
     - Developer:
         - GitHub:
-            - abbr: GH
-            - url: https://github.com/TheBatchelorFamily
+            abbr: GH
+            href: https://github.com/TheBatchelorFamily
         - Docker Hub:
-            - abbr: DH
-            - url: https://hub.docker.com
+            abbr: DH
+            href: https://hub.docker.com
         - Kubernetes Docs:
-            - abbr: K8s
-            - url: https://kubernetes.io/docs/
+            abbr: K8s
+            href: https://kubernetes.io/docs/
         - Portfolio site:
-            - abbr: PF
-            - url: https://itsmeganificent.com
+            abbr: PF
+            href: https://itsmeganificent.com
 
     - Infrastructure:
         - Traefik Hub:
-            - abbr: TF
-            - url: https://traefik.io/hub/
+            abbr: TF
+            href: https://traefik.io/hub/
         - MetalLB:
-            - abbr: LB
-            - url: https://metallb.universe.tf/
+            abbr: LB
+            href: https://metallb.universe.tf/
 
   services.yaml: |
     - Infrastructure:
