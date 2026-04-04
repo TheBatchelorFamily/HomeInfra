@@ -1,0 +1,17 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    uptime-kuma.io/monitor: "true"
+  hosts:
+    - host: longhorn.batchelorparty.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+longhornUI:
+  replicas: 1
