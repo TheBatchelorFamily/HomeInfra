@@ -1,0 +1,37 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homebox
+  namespace: argocd
+
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://bythehugo.github.io/homebox-helm
+      chart: homebox
+      targetRevision: 0.2.0
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/homebox/values.yaml
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      path: gitops/apps/homebox/manifests
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homebox
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

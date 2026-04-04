@@ -1,0 +1,11 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    uptime-kuma.io/monitor: "true"
+  hosts:
+    - host: box.batchelorparty.com
+      paths:
+        - path: /
+          pathType: Prefix
