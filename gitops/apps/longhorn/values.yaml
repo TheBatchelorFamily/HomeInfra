@@ -4,11 +4,9 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     uptime-kuma.io/monitor: "true"
-  hosts:
-    - host: longhorn.batchelorparty.com
-      paths:
-        - path: /
-          pathType: Prefix
+  host: longhorn.batchelorparty.com
+  path: /
+  pathType: Prefix
 
 persistence:
   defaultClass: true
