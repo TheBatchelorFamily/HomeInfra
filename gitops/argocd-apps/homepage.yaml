@@ -9,7 +9,7 @@ spec:
   project: default
 
   sources:
-    - repoURL: ghcr.io/m0nsterrr/helm-charts/
+    - repoURL: ghcr.io/m0nsterrr/helm-charts
       chart: homepage
       targetRevision: 4.11.1
       helm:
