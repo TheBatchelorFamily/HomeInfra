@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+
+spec:
+  project: default
+
+  sources:
+    - repoURL: ghcr.io/m0nsterrr/helm-charts/
+      chart: homepage
+      targetRevision: 4.11.1
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/homepage/values.yaml
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
