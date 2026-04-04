@@ -10,7 +10,6 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
     uptime-kuma.io/monitor: "true"
-    uptime-kuma.io/monitor-conditions: []
   hosts:
     - host: ha.batchelorparty.com
       paths:
