@@ -46,6 +46,9 @@ data:
         - MetalLB:
             - abbr: LB
               href: https://metallb.universe.tf/
+        - Longhorn:
+            - abbr: LH
+              href: https://longhorn.io/
 
   services.yaml: |
     - Infrastructure:
@@ -64,6 +67,14 @@ data:
         - MetalLB:
             description: Load balancer for bare metal
             icon: metallb
+        - Kube1: 
+            href: https://kube1.lan:9090
+            description: Kubernetes cluster dashboard
+            icon: kubernetes
+        - Kube2: 
+            href: https://kube2.lan:9090
+            description: Kubernetes cluster dashboard
+            icon: kubernetes
 
     - Smart Home:
         - Home Assistant:
