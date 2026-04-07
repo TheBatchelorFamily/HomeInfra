@@ -32,3 +32,6 @@ volumeMounts:
   - name: homepage-config
     mountPath: /app/config/widgets.yaml
     subPath: widgets.yaml
+
+podAnnotations:
+  Config.Updated: "4-7-26"
