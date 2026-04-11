@@ -85,6 +85,10 @@ data:
             href: https://ha.batchelorparty.com
             description: Home automation platform
             icon: home-assistant
+        - Home Box:
+            href: https://box.batchelorparty.com
+            description: Home inventory and organization system
+            icon: homebox
 
     - Media & Entertainment:
         - Plex:
