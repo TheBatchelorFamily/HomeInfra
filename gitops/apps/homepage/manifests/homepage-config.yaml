@@ -13,7 +13,7 @@ data:
 
     background:
       image: https://raw.githubusercontent.com/TheBatchelorFamily/Megans_Portfolio_Website/refs/heads/main/website/assets/img/waterfall-image.jpeg
-      opacity: 50
+      opacity: 30
 
     cardBlur: md
 
