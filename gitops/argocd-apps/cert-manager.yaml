@@ -13,8 +13,7 @@ spec:
       chart: cert-manager
       targetRevision: 1.20.1
       helm:
-        values:
-          installCRDs: true
+        installCRDs: true
 
   destination:
     server: https://kubernetes.default.svc
