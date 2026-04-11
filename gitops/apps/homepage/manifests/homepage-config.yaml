@@ -74,6 +74,10 @@ data:
             href: http://batchflix.home
             description: Network-attached storage
             icon: truenas-scale
+        - Omada Controller:
+            href: https://omada.home/
+            description: Network management controller
+            icon: omada
         - Kube1: 
             href: https://kube1.lan:9090
             description: Cockpit dashboard
