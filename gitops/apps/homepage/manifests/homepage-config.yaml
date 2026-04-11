@@ -69,12 +69,16 @@ data:
             icon: metallb
         - Kube1: 
             href: https://kube1.lan:9090
-            description: Kubernetes cluster dashboard
-            icon: kubernetes
+            description: Cockpit dashboard
+            icon: alma-linux
         - Kube2: 
             href: https://kube2.lan:9090
-            description: Kubernetes cluster dashboard
-            icon: kubernetes
+            description: Cockpit dashboard
+            icon: alma-linux
+        - Kube3: 
+            href: https://kube3.lan:9090
+            description: Cockpit dashboard
+            icon: alma-linux
 
     - Smart Home:
         - Home Assistant:
