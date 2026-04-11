@@ -35,3 +35,6 @@ volumeMounts:
 
 podAnnotations:
   Config.Updated: "4-11.2-26"
+
+strategy:
+  type: Recreate
