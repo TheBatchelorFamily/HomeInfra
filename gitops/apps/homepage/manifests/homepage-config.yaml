@@ -24,6 +24,10 @@ data:
       title: "Welcome!"
       content: "This is your central dashboard for all home infrastructure services."
 
+  bckground: |
+    url: https://raw.githubusercontent.com/TheBatchelorFamily/Megans_Portfolio_Website/refs/heads/main/website/assets/img/waterfall-image.jpeg
+    opacity: 0.5
+
   bookmarks.yaml: |
     - Developer:
         - Github:
