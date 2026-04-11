@@ -55,7 +55,7 @@ data:
         - ArgoCD:
             href: https://argocd.batchelorparty.com
             description: GitOps continuous delivery
-            icon: https://raw.githubusercontent.com/homarr-labs/dashboard-icons/master/png/argocd.png
+            icon: argo-cd
         - Uptime Kuma:
             href: http://kuma.batchelorparty.com
             description: Service monitoring and alerting

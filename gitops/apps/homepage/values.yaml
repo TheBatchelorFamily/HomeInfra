@@ -34,4 +34,4 @@ volumeMounts:
     subPath: widgets.yaml
 
 podAnnotations:
-  Config.Updated: "4-11-26"
+  Config.Updated: "4-11.1-26"
