@@ -57,7 +57,7 @@ data:
             description: GitOps continuous delivery
             icon: argocd
         - Uptime Kuma:
-            href: https://kuma.batchelorparty.com
+            href: http://kuma.batchelorparty.com
             description: Service monitoring and alerting
             icon: uptime-kuma
         - Longhorn:
