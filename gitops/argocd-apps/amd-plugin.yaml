@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amd plugin
+  namespace: argocd
+
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://github.com/ROCm/k8s-device-plugin
+      chart: amd-gpu
+      targetRevision: 0.21.0
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/amd-plugin/values.yaml
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amd-plugins
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
