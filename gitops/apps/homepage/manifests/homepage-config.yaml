@@ -57,7 +57,7 @@ data:
   services.yaml: |
     - Infrastructure:
         - ArgoCD:
-            href: https://argocd.batchelorparty.com
+            href: https://argo.batchelorparty.com
             description: GitOps continuous delivery
             icon: argo-cd
         - Uptime Kuma:
