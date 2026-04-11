@@ -70,6 +70,10 @@ data:
         - MetalLB:
             description: Load balancer for bare metal
             icon: metallb
+        - TrueNas:
+            href: http://batchflix.home
+            description: Network-attached storage
+            icon: truenas-scale
         - Kube1: 
             href: https://kube1.lan:9090
             description: Cockpit dashboard
