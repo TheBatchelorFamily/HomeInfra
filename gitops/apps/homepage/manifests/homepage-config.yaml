@@ -53,6 +53,7 @@ data:
             - abbr: LH
               href: https://longhorn.io/
 
+# Icons are sourced from https://github.com/homarr-labs/dashboard-icons/tree/main/png
   services.yaml: |
     - Infrastructure:
         - ArgoCD:
