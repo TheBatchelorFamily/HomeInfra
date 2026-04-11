@@ -41,9 +41,6 @@ data:
         - Kubernetes Docs:
             - abbr: K8s
               href: https://kubernetes.io/docs/
-        - Portfolio site:
-            - abbr: PF
-              href: https://itsmeganificent.com
 
     - Infrastructure:
         - Traefik Hub:
@@ -111,6 +108,10 @@ data:
             href: https://portainer.batchelorparty.com
             description: Docker container management
             icon: portainer
+        - Portfolio site:
+            href: https://itsmeganificent.com
+            description: Megan's portfolio website
+            icon: https://raw.githubusercontent.com/TheBatchelorFamily/Megans_Portfolio_Website/refs/heads/main/website/assets/img/favicon.png
 
   widgets.yaml: |
     - resources:
