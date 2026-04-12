@@ -29,6 +29,8 @@ extraVolumeMounts:
     mountPath: /dev/dri
 
 extraEnv:
+  - name: ADVERTISE_IP
+    value: "http://plex.batchelorparty.com:80"
   - name: PLEX_CLAIM
     valueFrom:
       secretKeyRef:
