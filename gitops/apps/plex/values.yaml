@@ -39,3 +39,7 @@ pms:
 
 podSecurityContext:
   supplementalGroups: [39, 105]
+
+service:
+  type: NodePort
+  port: 32400
