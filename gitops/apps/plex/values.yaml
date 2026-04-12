@@ -1,0 +1,33 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    uptime-kuma.io/monitor: "true"
+  hosts:
+    - host: plex.batchelorparty.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+dnsPolicy: ClusterFirstWithHostNet
+
+extraVolumes:
+  - name: plex-media-nfs
+    nfs:
+      server: 192.168.1.50  # Replace with your TrueNAS IP
+      path: /mnt/tank/media # Replace with your NFS Export path
+      readOnly: true        # Recommended for media libraries
+  - name: dev-dri
+    mountPath: /dev/dri
+
+extraVolumeMounts:
+  - name: plex-media-nfs
+    mountPath: /data/media
+  - name: dev-dri
+    hostPath:
+      path: /dev/dri
+
+extraEnv:
+  PLEX_UID: "972"
+  PLEX_GID: "972"
