@@ -29,14 +29,13 @@ extraVolumeMounts:
     mountPath: /dev/dri
 
 extraEnv:
-  ADVERTISE_IP: "http://plex.batchelorparty.com:80"
-  PLEX_CLAIM:
-    valueFrom:
-      secretKeyRef:
-        name: plex-secrets
-        key: claim-token
   PLEX_UID: "972"
   PLEX_GID: "972"
+
+pms:
+  claimSecret:
+    name: "plex-secrets"
+    key: "claim-token"
 
 podSecurityContext:
   supplementalGroups: [39, 105]
