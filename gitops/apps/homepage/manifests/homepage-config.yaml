@@ -65,7 +65,7 @@ data:
             description: Service monitoring and alerting
             icon: uptime-kuma
         - Longhorn:
-            href: https://longhorn.batchelorparty.com
+            href: http://longhorn.batchelorparty.com
             description: Distributed block storage
             icon: longhorn
         - MetalLB:
