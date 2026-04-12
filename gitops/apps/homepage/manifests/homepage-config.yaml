@@ -94,7 +94,7 @@ data:
 
     - Smart Home:
         - Home Assistant:
-            href: https://ha.batchelorparty.com
+            href: http://ha.batchelorparty.com
             description: Home automation platform
             icon: home-assistant
         - Home Box:
