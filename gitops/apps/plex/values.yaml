@@ -19,14 +19,14 @@ extraVolumes:
       path: /mnt/tank/media # Replace with your NFS Export path
       readOnly: true        # Recommended for media libraries
   - name: dev-dri
-    mountPath: /dev/dri
+    hostPath:
+      path: /dev/dri
 
 extraVolumeMounts:
   - name: plex-media-nfs
     mountPath: /data/media
   - name: dev-dri
-    hostPath:
-      path: /dev/dri
+    mountPath: /dev/dri
 
 extraEnv:
   PLEX_UID: "972"
