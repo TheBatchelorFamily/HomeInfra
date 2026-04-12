@@ -29,8 +29,15 @@ extraVolumeMounts:
     mountPath: /dev/dri
 
 extraEnv:
-  PLEX_UID: "972"
-  PLEX_GID: "972"
+  - name: PLEX_CLAIM
+    valueFrom:
+      secretKeyRef:
+        name: plex-secrets
+        key: claim-token
+  - name: PLEX_UID
+    value: "972"
+  - name: PLEX_GID
+    value: "972"
 
 podSecurityContext:
   supplementalGroups: [39, 105]
