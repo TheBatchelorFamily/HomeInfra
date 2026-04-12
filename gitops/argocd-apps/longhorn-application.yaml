@@ -22,6 +22,10 @@ spec:
 
     - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
       targetRevision: main
+      path: gitops/apps/longhorn/manifests
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
       ref: HomeInfra
 
   destination:
