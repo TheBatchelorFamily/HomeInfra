@@ -6,7 +6,7 @@ metadata:
 spec:
   description: "Infrastructure Argo CD project"
   sourceRepos:
-    - https://github.com/TheBatchelorFamily/HomeInfra.git
+    - '*'
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
@@ -25,8 +25,7 @@ metadata:
 spec:
   description: "Applications Argo CD project"
   sourceRepos:
-    - https://github.com/TheBatchelorFamily/HomeInfra.git
-    - https://ghcr.io/*
+    - '*'
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
