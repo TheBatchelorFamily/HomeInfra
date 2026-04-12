@@ -31,3 +31,6 @@ extraVolumeMounts:
 extraEnv:
   PLEX_UID: "972"
   PLEX_GID: "972"
+
+podSecurityContext:
+  supplementalGroups: [39, 105]
