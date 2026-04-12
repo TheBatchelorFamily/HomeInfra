@@ -15,8 +15,8 @@ dnsPolicy: ClusterFirstWithHostNet
 extraVolumes:
   - name: plex-media-nfs
     nfs:
-      server: 192.168.1.50  # Replace with your TrueNAS IP
-      path: /mnt/tank/media # Replace with your NFS Export path
+      server: 192.168.98.150  # Replace with your TrueNAS IP
+      path: /mnt/BatchFlix/BatFlixShare # Replace with your NFS Export path
       readOnly: true        # Recommended for media libraries
   - name: dev-dri
     hostPath:
