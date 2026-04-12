@@ -104,7 +104,7 @@ data:
 
     - Media & Entertainment:
         - Plex:
-            href: https://plex.batchelorparty.com
+            href: http://plex.batchelorparty.com
             description: Media streaming server
             icon: plex
 
