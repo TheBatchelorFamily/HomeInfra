@@ -11,7 +11,7 @@ spec:
   sources:
     - repoURL: oci://registry.k8s.io/nfd/charts/node-feature-discovery
       chart: node-feature-discovery
-      targetRevision: 0.18.3
+      targetRevision: 0.18.*
 
   destination:
     server: https://kubernetes.default.svc

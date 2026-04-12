@@ -14,7 +14,7 @@ spec:
   sources:
     - repoURL: https://small-hack.github.io/home-assistant-chart
       chart: home-assistant
-      targetRevision: "1.11.0"
+      targetRevision: "1.11.*"
       helm:
         valueFiles:
           - $HomeInfra/gitops/apps/home-assistant/values.yaml

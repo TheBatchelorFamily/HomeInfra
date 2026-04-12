@@ -11,7 +11,7 @@ spec:
   sources:
     - repoURL: https://rocm.github.io/k8s-device-plugin/
       chart: amd-gpu
-      targetRevision: 0.21.0
+      targetRevision: 0.21.*
       helm:
         valueFiles:
           - $HomeInfra/gitops/apps/amd-plugin/values.yaml

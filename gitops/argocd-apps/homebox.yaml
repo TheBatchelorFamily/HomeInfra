@@ -11,7 +11,7 @@ spec:
   sources:
     - repoURL: https://bythehugo.github.io/homebox-helm
       chart: homebox
-      targetRevision: 0.2.0
+      targetRevision: 0.2.*
       helm:
         valueFiles:
           - $HomeInfra/gitops/apps/homebox/values.yaml
