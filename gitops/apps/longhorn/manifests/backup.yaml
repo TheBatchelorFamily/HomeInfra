@@ -8,4 +8,4 @@ spec:
   task: "backup"
   retain: 7
   concurrency: 1
-  Groups: default
+  groups: [default]
