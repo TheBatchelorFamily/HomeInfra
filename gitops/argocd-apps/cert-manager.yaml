@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: apps
+  project: infra
 
   sources:
     - repoURL: https://charts.jetstack.io

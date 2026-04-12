@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: apps
+  project: infra
 
   sources:
     - repoURL: ghcr.io/helmforgedev/helm

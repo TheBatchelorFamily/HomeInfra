@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: apps
+  project: infra
 
   sources:
     - repoURL: oci://registry.k8s.io/nfd/charts/node-feature-discovery
