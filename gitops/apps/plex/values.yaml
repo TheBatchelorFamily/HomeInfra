@@ -41,5 +41,12 @@ podSecurityContext:
   supplementalGroups: [39, 105]
 
 service:
-  type: NodePort
-  port: 32400
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  annotations:
+    metallb.universe.tf/address-pool: plex-pool
+  ports:
+    - name: plex
+      port: 32400
+      targetPort: 32400
+      protocol: TCP

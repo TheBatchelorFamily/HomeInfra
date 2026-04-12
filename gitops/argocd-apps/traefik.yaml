@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+
+spec:
+  project: infra
+
+  sources:
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      path: gitops/apps/traefik/manifests
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
