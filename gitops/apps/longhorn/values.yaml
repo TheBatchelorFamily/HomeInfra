@@ -11,6 +11,10 @@ ingress:
 persistence:
   defaultClass: true
   defaultClassReplicaCount: 3
+  recurringJobSelector:
+    enable: true
+    jobList: '[{"name":"daily-backup", "isDefault":true}]'
+
 longhornUI:
   replicas: 1
 
