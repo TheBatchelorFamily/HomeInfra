@@ -33,6 +33,7 @@ extraEnv:
   PLEX_GID: "972"
 
 pms:
+  configStorage: 5Gi
   claimSecret:
     name: "plex-secrets"
     key: "claim-token"
