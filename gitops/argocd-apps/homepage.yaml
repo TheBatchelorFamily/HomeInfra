@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: default
+  project: apps
 
   sources:
     - repoURL: ghcr.io/m0nsterrr/helm-charts

@@ -6,7 +6,7 @@ metadata:
   namespace: argocd
 
 spec:
-  project: default
+  project: apps
 
   sources:
     - repoURL: https://rocm.github.io/k8s-device-plugin/
