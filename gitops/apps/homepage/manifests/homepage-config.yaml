@@ -79,6 +79,10 @@ data:
             href: https://omada.home/
             description: Network management controller
             icon: omada
+        - Headlamp: 
+            href: http://headlamp.batchelorparty.com
+            description: Kubernetes dashboard
+            icon: headlamp
         - Kube1: 
             href: https://kube1.lan:9090
             description: Cockpit dashboard
@@ -113,10 +117,6 @@ data:
             href: https://github.com/TheBatchelorFamily
             description: Family code repositories
             icon: github
-        - Portainer:
-            href: https://portainer.batchelorparty.com
-            description: Docker container management
-            icon: portainer
         - Portfolio site:
             href: https://itsmeganificent.com
             description: Megan's portfolio website
