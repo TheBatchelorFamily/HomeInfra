@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: headlamp
+  namespace: argocd
+
+spec:
+  project: apps
+
+  sources:
+    - repoURL: https://kubernetes-sigs.github.io/headlamp
+      chart: headlamp
+      targetRevision: 0.41.*
+      helm:
+        valueFiles:
+          - $HomeInfra/gitops/apps/headlamp/values.yaml
+
+    - repoURL: https://github.com/TheBatchelorFamily/HomeInfra.git
+      targetRevision: main
+      ref: HomeInfra
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

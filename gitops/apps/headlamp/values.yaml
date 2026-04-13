@@ -1,0 +1,11 @@
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    uptime-kuma.io/monitor: "true"
+  hosts:
+    - host: headlamp.batchelorparty.com
+      paths:
+        - path: /
+          pathType: Prefix
