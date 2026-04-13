@@ -8,4 +8,4 @@ ingress:
     - host: headlamp.batchelorparty.com
       paths:
         - path: /
-          pathType: Prefix
+        - pathType: Prefix
