@@ -8,7 +8,7 @@ data:
     title: "Home Infrastructure"
     description: "Central dashboard for home infrastructure and services"
     theme: dark
-    color: blue
+    color: slate
     language: en
 
     background:
