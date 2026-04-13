@@ -35,23 +35,11 @@ data:
         - Github:
             - abbr: GH
               href: https://github.com/TheBatchelorFamily
-        - Docker Hub:
-            - abbr: DH
-              href: https://hub.docker.com
-        - Kubernetes Docs:
-            - abbr: K8s
-              href: https://kubernetes.io/docs/
+        - kubesearch:
+            - abbr: KS
+              href: https://kubesearch.dev/
 
-    - Infrastructure:
-        - Traefik Hub:
-            - abbr: TF
-              href: https://traefik.io/hub/
-        - MetalLB:
-            - abbr: LB
-              href: https://metallb.universe.tf/
-        - Longhorn:
-            - abbr: LH
-              href: https://longhorn.io/
+    - Useful Links:
 
 # Icons are sourced from https://github.com/homarr-labs/dashboard-icons/tree/main/png
   services.yaml: |
