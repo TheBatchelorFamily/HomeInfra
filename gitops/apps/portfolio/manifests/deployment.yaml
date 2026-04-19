@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio-beta
+  labels:
+    app: portfolio
+    env: beta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portfolio
+      env: beta
+  template:
+    metadata:
+      labels:
+        app: portfolio
+        env: beta
+    spec:
+      containers:
+      - name: website
+        image: fiercekitti/portfolio_website:v2.3.2 # Update this tag as needed
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
