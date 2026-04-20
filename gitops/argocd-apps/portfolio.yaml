@@ -13,8 +13,7 @@ metadata:
     argocd-image-updater.argoproj.io/portfolio.update-strategy: latest
     
     # 3. Only allow tags that follow your beta naming convention
-    argocd-image-updater.argoproj.io/portfolio.allow-tags: |
-      regexp:^.*-beta.*$
+    argocd-image-updater.argoproj.io/portfolio.allow-tags: regexp:^.*-beta.*$
 
     # 4. Commit the new tag back to your HomeInfra repo automatically
     argocd-image-updater.argoproj.io/write-back-method: git
