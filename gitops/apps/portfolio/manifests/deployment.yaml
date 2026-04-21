@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: website
-        image: fiercekitti/portfolio_website:2.3.3-beta # Update this tag as needed
+        image: fiercekitti/portfolio_website:2.3.3-beta2 # Update this tag as needed
         imagePullPolicy: Always
         ports:
         - containerPort: 80
