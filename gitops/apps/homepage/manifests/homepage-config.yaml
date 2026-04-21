@@ -108,7 +108,7 @@ data:
             description: Megan's portfolio website
             icon: https://raw.githubusercontent.com/TheBatchelorFamily/Megans_Portfolio_Website/refs/heads/main/website/assets/img/favicon.png
         - Portfolio site beta:
-            href: https://portfolio.batchelorparty.com
+            href: http://portfolio.batchelorparty.com
             description: Megan's portfolio website (beta)
             icon: https://raw.githubusercontent.com/TheBatchelorFamily/Megans_Portfolio_Website/refs/heads/main/website/assets/img/favicon.png
 

@@ -34,7 +34,7 @@ volumeMounts:
     subPath: widgets.yaml
 
 podAnnotations:
-  Config.Updated: "4-14-26"
+  Config.Updated: "4-21-26"
 
 strategy:
   type: Recreate
