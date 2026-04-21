@@ -10,13 +10,7 @@ metadata:
     argocd-image-updater.argoproj.io/image-list: portfolio=fiercekitti/portfolio_website
     
     # 2. Use the 'latest' strategy to grab the newest tag by creation date
-    argocd-image-updater.argoproj.io/portfolio.update-strategy: latest
-    
-    # 3. Only allow tags that follow your beta naming convention
-    argocd-image-updater.argoproj.io/portfolio.allow-tags: regexp:^.*-beta.*$
-
-    # 4. Commit the new tag back to your HomeInfra repo automatically
-    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/portfolio.update-strategy: digest
 
 spec:
   project: apps
