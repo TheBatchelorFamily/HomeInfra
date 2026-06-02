@@ -9,6 +9,7 @@
 
 - hosts: master
   become: true
+  serial: 1
   roles:
     - role: k3s/master
 

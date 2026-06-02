@@ -1,4 +1,23 @@
 ---
+- name: Stop and disable existing k3s-node service if present
+  systemd:
+    name: k3s-node
+    state: stopped
+    enabled: no
+  failed_when: false
+  when: promote_to_master | default(false)
+
+- name: Remove old k3s-node systemd unit file if present
+  file:
+    path: "{{ systemd_dir }}/k3s-node.service"
+    state: absent
+  when: promote_to_master | default(false)
+
+- name: Reload systemd after removing old k3s-node unit
+  systemd:
+    daemon_reload: yes
+  when: promote_to_master | default(false)
+
 - name: Copy K3s service file
   register: k3s_service
   template:

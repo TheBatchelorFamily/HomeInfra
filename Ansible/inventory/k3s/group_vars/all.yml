@@ -7,3 +7,4 @@ master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['m
 extra_server_args: "--node-ip={{ ansible_host }} --disable servicelb"
 extra_agent_args: "--node-ip={{ ansible_host }}"
 zone_default: "{{ ansible_facts.firewalld_default_zone | default('public') }}"
+promote_to_master: true
