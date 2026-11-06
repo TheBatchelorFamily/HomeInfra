@@ -1,3 +1,7 @@
+global:
+  networkPolicy:
+    create: false
+
 server:
   service:
     type: ClusterIP

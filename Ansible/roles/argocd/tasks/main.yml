@@ -2,6 +2,7 @@
 - name: Install Helm
   shell: |
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  run_once: true
 
 - name: Set kubeconfig environment variable
   set_fact:
@@ -11,17 +12,33 @@
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     kubectl create namespace {{ argocd_namespace }} --dry-run=client -o yaml | kubectl apply -f -
+  run_once: true
 
 - name: Add ArgoCD Helm repository
   shell: |
     helm repo add argocd https://argoproj.github.io/argo-helm
     helm repo update
+  run_once: true
 
 - name: Copy shared ArgoCD Helm values to the cluster host
   copy:
     src: "{{ role_path }}/../../../gitops/apps/argocd/values.yaml"
     dest: /tmp/argocd-values.yaml
     mode: "0644"
+  run_once: true
+
+- name: Check whether ArgoCD is already managed by GitOps
+  command: kubectl get applications.argoproj.io argocd -n {{ argocd_namespace }} -o name
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: argocd_self_application
+  changed_when: false
+  failed_when: >-
+    argocd_self_application.rc != 0
+    and 'not found' not in argocd_self_application.stderr | lower
+    and "doesn't have a resource type" not in argocd_self_application.stderr | lower
+    and 'could not find the requested resource' not in argocd_self_application.stderr | lower
+  run_once: true
 
 - name: Install ArgoCD via Helm
   shell: |
@@ -33,12 +50,15 @@
       --timeout 10m
 
   timeout: 900
+  when: argocd_self_application.rc != 0
+  run_once: true
 
 - name: Wait for ArgoCD server deployment
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
   timeout: 900
+  run_once: true
 
 - name: Register GitOps repository in ArgoCD
   shell: |
@@ -56,6 +76,7 @@
       url: {{ gitops_repo_url }}
     EOF
   register: argocd_repo_register
+  run_once: true
 
 - name: Display ArgoCD access info
   debug:
@@ -67,6 +88,7 @@
       - "  kubectl -n {{ argocd_namespace }} get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
       - "Then log in and change the password manually in the ArgoCD UI."
       - "Access ArgoCD at http://argo.batchelorparty.com"
+  run_once: true
 
 - name: Apply GitOps Bootstrap (App-of-Apps)
   shell: |
@@ -95,3 +117,4 @@
           prune: true
           selfHeal: true
     EOF
+  run_once: true
