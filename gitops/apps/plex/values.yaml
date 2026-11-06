@@ -41,6 +41,7 @@ extraVolumeMounts:
     mountPath: /dev/dri
 
 extraEnv:
+  ADVERTISE_IP: "http://plex.batchelorparty.com:32400/"
   PLEX_UID: "972"
   PLEX_GID: "972"
 
