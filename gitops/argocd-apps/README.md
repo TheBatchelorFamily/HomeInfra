@@ -147,6 +147,17 @@ git push
 # ArgoCD will auto-sync within 3 minutes
 ```
 
+### Argo CD self-management
+
+The `argocd` Application deploys Argo CD from the Helm chart and also manages its Traefik
+IngressRoute. Its Helm settings are in `gitops/apps/argocd/values.yaml`; the Ansible role
+uses the same file for the initial installation. The chart version is set by
+`argocd.yaml` and is also read by Ansible, so changing it there updates both paths. The
+`10.*` constraint lets Argo CD follow newer chart releases in the 10.x series.
+
+After the initial Ansible bootstrap, Argo CD syncs changes to its own configuration
+automatically. Ansible is only needed to bootstrap or recover the installation.
+
 ## Troubleshooting
 
 ### App shows "OutOfSync"

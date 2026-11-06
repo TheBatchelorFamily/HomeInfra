@@ -1,0 +1,12 @@
+server:
+  service:
+    type: ClusterIP
+  insecure: true
+  extraArgs:
+    - --insecure
+
+configs:
+  params:
+    server.insecure: "true"
+  cm:
+    url: https://argo.batchelorparty.com

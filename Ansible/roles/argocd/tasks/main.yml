@@ -17,17 +17,19 @@
     helm repo add argocd https://argoproj.github.io/argo-helm
     helm repo update
 
+- name: Copy shared ArgoCD Helm values to the cluster host
+  copy:
+    src: "{{ role_path }}/../../../gitops/apps/argocd/values.yaml"
+    dest: /tmp/argocd-values.yaml
+    mode: "0644"
+
 - name: Install ArgoCD via Helm
   shell: |
     export KUBECONFIG={{ kubeconfig_path }}
     helm upgrade --install argocd argocd/argo-cd \
-      --namespace argocd \
-      --version {{ argocd_chart_version }} \
-      --set server.service.type=ClusterIP \
-      --set server.insecure=true \
-      --set configs.params.server.insecure=true \
-      --set configs.cm.url=https://argo.batchelorparty.com \
-      --set server.extraArgs[0]=--insecure \
+      --namespace {{ argocd_namespace }} \
+      --version "{{ argocd_chart_version }}" \
+      --values /tmp/argocd-values.yaml \
       --timeout 10m
 
   timeout: 900
@@ -37,34 +39,6 @@
     export KUBECONFIG={{ kubeconfig_path }}
     kubectl rollout status deployment/argocd-server -n {{ argocd_namespace }} --timeout=600s
   timeout: 900
-
-- name: Apply Traefik IngressRoute for ArgoCD (h2c for gRPC)
-  shell: |
-    export KUBECONFIG={{ kubeconfig_path }}
-    cat <<'EOF' | kubectl apply -f -
-    apiVersion: traefik.io/v1alpha1
-    kind: IngressRoute
-    metadata:
-      name: argocd-server
-      namespace: {{ argocd_namespace }}
-    spec:
-      entryPoints:
-        - websecure
-      routes:
-        - match: Host(`argo.batchelorparty.com`) && Headers(`content-type`,`application/grpc`)
-          kind: Rule
-          services:
-            - name: argocd-server
-              port: 80
-              scheme: h2c
-        - match: Host(`argo.batchelorparty.com`)
-          kind: Rule
-          services:
-            - name: argocd-server
-              port: 80
-      tls:
-        secretName: "" 
-    EOF
 
 - name: Register GitOps repository in ArgoCD
   shell: |

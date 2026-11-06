@@ -1,6 +1,6 @@
 ---
 argocd_namespace: argocd
-argocd_chart_version: "9.4.17"
+argocd_chart_version: "{{ (lookup('file', role_path + '/../../../gitops/argocd-apps/argocd.yaml') | from_yaml).spec.sources[0].targetRevision }}"
 gitops_repo_url: "https://github.com/TheBatchelorFamily/HomeInfra.git"
 gitops_repo_path: "argocd-apps"
 gitops_repo_branch: "main"
