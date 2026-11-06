@@ -12,6 +12,18 @@ ingress:
 
 dnsPolicy: ClusterFirstWithHostNet
 
+# Prefer AMD nodes when available, while allowing scheduling on Intel nodes.
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+            - key: feature.node.kubernetes.io/cpu-model.vendor_id
+              operator: In
+              values:
+                - AMD
+
 extraVolumes:
   - name: plex-media-nfs
     nfs:
