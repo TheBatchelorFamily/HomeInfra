@@ -12,9 +12,9 @@ spec:
     namespace: home-assistant
 
   sources:
-    - repoURL: https://small-hack.github.io/home-assistant-chart
+    - repoURL: https://pajikos.github.io/home-assistant-helm-chart
       chart: home-assistant
-      targetRevision: "1.11.*"
+      targetRevision: "0.3.*"
       helm:
         valueFiles:
           - $HomeInfra/gitops/apps/home-assistant/values.yaml

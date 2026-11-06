@@ -1,5 +1,5 @@
-# values for the small-hack home-assistant chart
-# https://github.com/small-hack/home-assistant-chart
+# Values for the pajikos Home Assistant chart
+# https://github.com/pajikos/home-assistant-helm-chart
 
 service:
   port: 80
@@ -17,20 +17,17 @@ ingress:
           pathType: Prefix
 
 readinessProbe:
-  initialDelaySeconds: 30 # Give it 30s before even checking
+  initialDelaySeconds: 30
   periodSeconds: 10
-  failureThreshold: 10 # Allow 10 failures (100s total) before giving up
+  failureThreshold: 10
 
 livenessProbe:
-  initialDelaySeconds: 60 # Be even more generous with liveness to avoid restart loops
+  initialDelaySeconds: 60
   periodSeconds: 20
   failureThreshold: 5
 
 image:
   tag: "2026.2.3"
-
-strategy:
-  type: Recreate
 
 persistence:
   enabled: true
@@ -38,31 +35,27 @@ persistence:
   size: 5Gi
   storageClass: "longhorn"
 
-# extraVolumes:
-#   - name: ha-scripts
-#     configMap:
-#       name: ha-config-scripts
-
-# extraVolumeMounts:
-#   - name: ha-scripts
-#     mountPath: /config/scripts.yaml
-#     subPath: scripts.yaml
-#     readOnly: true
-
-homeAssistant:
-  configuration: |-
+configuration:
+  enabled: true
+  trusted_proxies:
+    - 10.42.0.0/24
+    - 10.42.0.0/16
+    - 10.43.0.0/16
+    - 192.168.98.0/24
+  templateConfig: |-
     homeassistant:
       time_zone: America/Chicago
       temperature_unit: F
       unit_system: us_customary
 
+    {{- if and (include "home-assistant.httpYamlSupported" .) (or .Values.ingress.enabled .Values.ingress.external .Values.httpRoute.enabled) }}
     http:
       use_x_forwarded_for: true
       trusted_proxies:
-        - 10.42.0.0/24 # Traefik's IP range (optional, but recommended for accurate client IP logging)
-        - 10.42.0.0/16 # Pod Network (Traefik's IP is here)
-        - 10.43.0.0/16 # Service Network
-        - 192.168.98.0/24 # Your Local Network (Optional, but helpful)
+        {{- range .Values.configuration.trusted_proxies }}
+        - {{ . }}
+        {{- end }}
+    {{- end }}
 
     # Loads default set of integrations. Do not remove.
     default_config:
@@ -73,25 +66,51 @@ homeAssistant:
     automation: !include automations.yaml
     script: !include scripts.yaml
     scene: !include scenes.yaml
-  scripts: |
-    # default scripts content
-    # add your scripts here
-    # Example:
-    # my_script:
-    #   sequence:
-    #     - service: light.turn_on
-    #       target:
-    #         entity_id: light.living_room
-  setupHacsJobs:
-    enabled: true
 
-# examples for adding USB devices or other host volumes
-#extraVolumes:
-#  - name: usb
-#    hostPath:
-#      path: "/dev/serial/by-id/usb-..."
-#      type: CharDevice
-#extraVolumeMounts:
-#  - name: usb
-#    mountPath: /dev/ttyACM0
-#    readOnly: true
+initContainers:
+  - name: install-hacs
+    image: python:3-alpine
+    imagePullPolicy: IfNotPresent
+    command:
+      - /bin/sh
+      - -c
+    args:
+      - |
+        set -eu
+        if [ -d /config/custom_components/hacs ]; then
+          echo "HACS is already installed; skipping."
+          exit 0
+        fi
+        mkdir -p /config/custom_components
+        python3 - <<'PY'
+        from io import BytesIO
+        from urllib.request import urlopen
+        from zipfile import ZipFile
+
+        url = "https://github.com/hacs/integration/releases/latest/download/hacs.zip"
+        with urlopen(url, timeout=60) as response:
+            archive_data = response.read()
+
+        with ZipFile(BytesIO(archive_data)) as archive:
+            files = [
+                name for name in archive.namelist()
+                if name and not name.endswith("/")
+            ]
+            if "manifest.json" not in files:
+                raise RuntimeError("HACS release archive does not contain manifest.json at its root")
+            archive.extractall("/config/custom_components/hacs", files)
+        PY
+    volumeMounts:
+      - name: home-assistant
+        mountPath: /config
+
+additionalVolumes:
+  - name: ha-scripts
+    configMap:
+      name: ha-config-scripts
+
+additionalMounts:
+  - name: ha-scripts
+    mountPath: /config/scripts.yaml
+    subPath: scripts.yaml
+    readOnly: true
