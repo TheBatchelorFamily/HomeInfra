@@ -46,9 +46,29 @@ extraEnv:
 
 pms:
   configStorage: 10Gi
+  # Migrate the current config before syncing; switching claims requires recreating the StatefulSet.
+  configExistingClaim: plex-config-longhorn
   claimSecret:
     name: "plex-secrets"
     key: "claim-token"
+
+extraManifests:
+  - |
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: {{ .Values.pms.configExistingClaim }}
+      labels:
+        {{- include "pms-chart.labels" . | nindent 4 }}
+      annotations:
+        helm.sh/resource-policy: keep
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: {{ .Values.pms.configStorage }}
 
 podSecurityContext:
   supplementalGroups: [39, 105]
