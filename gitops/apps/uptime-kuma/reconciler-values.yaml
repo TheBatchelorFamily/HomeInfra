@@ -15,3 +15,11 @@ staticMonitors:
       url: https://itsmeganificent.com/
       interval: 600
       conditions: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi   # Bumped from 128Mi
+  requests:
+    cpu: 10m
+    memory: 256Mi   # Bumped from 64Mi
