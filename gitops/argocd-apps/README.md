@@ -114,6 +114,26 @@ kubectl -n argocd patch app metallb -p '{"metadata":{"finalizers":["resources-fi
   - Replica count: 3 (configurable in `../Ansible/roles/longhorn/defaults/main.yml`)
   - UI replicas: 1 (access via `kubectl port-forward`)
 
+### Kube-Prometheus-Stack (`kube-prometheus-stack.yaml`)
+
+- **Namespace**: `monitoring`
+- **Chart**: `prometheus-community/kube-prometheus-stack` 92.x
+- **Purpose**: Collects cluster and node metrics using Prometheus, Grafana, node exporter, and kube-state-metrics
+- **Storage**: Prometheus uses a 3Gi Longhorn volume, with retention capped at 7 days or 2GiB. Longhorn's default three replicas use up to about 9Gi across node disks. Grafana uses ephemeral storage.
+- **Access**: Use `kubectl port-forward` for the Grafana and Prometheus web interfaces; neither is exposed through ingress.
+
+```bash
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-grafana 3000:80
+kubectl -n monitoring get secret kube-prometheus-stack-grafana \
+  -o jsonpath='{.data.admin-password}' | base64 -d
+```
+
+Open `http://localhost:3000` and log in as `admin`. To access Prometheus directly:
+
+```bash
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-kube-prometheus-prometheus 9090:9090
+```
+
 ### App-of-Apps (`app-of-apps.yaml`)
 
 - **Namespace**: `argocd`
