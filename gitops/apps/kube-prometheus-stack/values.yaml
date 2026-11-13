@@ -3,6 +3,7 @@ grafana:
     enabled: false
   ingress:
     enabled: false
+  revisionHistoryLimit: 2
 
 prometheus:
   prometheusSpec:
@@ -17,3 +18,9 @@ prometheus:
           resources:
             requests:
               storage: 3Gi
+
+prometheusOperator:
+  revisionHistoryLimit: 2
+
+kube-state-metrics:
+  revisionHistoryLimit: 2
