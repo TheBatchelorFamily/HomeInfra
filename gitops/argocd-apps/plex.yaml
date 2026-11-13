@@ -4,8 +4,7 @@ kind: Application
 metadata:
   annotations:
     argocd-image-updater.argoproj.io/image-list: plex=plexinc/pms-docker
-    argocd-image-updater.argoproj.io/portfolio.update-strategy: digest
-
+    argocd-image-updater.argoproj.io/plex.update-strategy: digest
   name: plex
   namespace: argocd
 
